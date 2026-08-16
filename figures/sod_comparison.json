@@ -1,0 +1,77 @@
+{
+  "problem": "Sod shock tube",
+  "configuration": {
+    "cells": 400,
+    "x_min": 0.0,
+    "x_max": 1.0,
+    "final_time": 0.2,
+    "gamma": 1.4,
+    "cfl": 0.8,
+    "order": 2,
+    "max_steps": 1000000
+  },
+  "boundary_conditions": "transmissive/outflow",
+  "riemann_solver": "HLL",
+  "schemes": {
+    "first_order": "piecewise constant + forward Euler",
+    "second_order": "MUSCL minmod + SSP-RK2"
+  },
+  "first_order_steps": 218,
+  "second_order_steps": 218,
+  "L1_errors": {
+    "density": {
+      "first_order_L1": 0.00675093618223388,
+      "second_order_L1": 0.0026156462972794082
+    },
+    "velocity": {
+      "first_order_L1": 0.008298003305465736,
+      "second_order_L1": 0.0046288925202230815
+    },
+    "pressure": {
+      "first_order_L1": 0.0047899929569231595,
+      "second_order_L1": 0.0017899419415398465
+    }
+  },
+  "integral_changes": {
+    "first_order": [
+      0.0,
+      0.17999999999999997,
+      0.0
+    ],
+    "second_order": [
+      0.0,
+      0.17999999999999985,
+      0.0
+    ]
+  },
+  "primitive_extrema": {
+    "first_order": {
+      "density": [
+        0.125,
+        1.0
+      ],
+      "velocity": [
+        0.0,
+        0.9290338701434194
+      ],
+      "pressure": [
+        0.1,
+        1.0
+      ]
+    },
+    "second_order": {
+      "density": [
+        0.125,
+        1.0
+      ],
+      "velocity": [
+        0.0,
+        0.9293401845348466
+      ],
+      "pressure": [
+        0.1,
+        1.0
+      ]
+    }
+  }
+}

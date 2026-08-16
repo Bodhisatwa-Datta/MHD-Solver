@@ -10,6 +10,11 @@ from mhd_solver.hydro1d.solver import HydroConfig, apply_outflow_boundaries, sol
 
 
 class SolverTests(unittest.TestCase):
+    def test_exact_sod_star_state_matches_standard_values(self) -> None:
+        sample = exact_sod(np.array([0.6, 0.75]), 0.2)
+        np.testing.assert_allclose(sample[1], [0.92745262, 0.92745262], rtol=1.0e-7)
+        np.testing.assert_allclose(sample[2], [0.30313018, 0.30313018], rtol=1.0e-7)
+
     def test_outflow_boundaries_copy_edge_cells(self) -> None:
         conserved = np.arange(15.0).reshape(3, 5)
         extended = apply_outflow_boundaries(conserved)

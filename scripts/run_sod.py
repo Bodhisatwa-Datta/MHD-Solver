@@ -66,12 +66,28 @@ def main() -> None:
         "configuration": asdict(base),
         "boundary_conditions": "transmissive/outflow",
         "riemann_solver": "HLL",
+        "schemes": {
+            "first_order": "piecewise constant + forward Euler",
+            "second_order": "MUSCL minmod + SSP-RK2",
+        },
         "first_order_steps": first.steps,
         "second_order_steps": second.steps,
         "L1_errors": errors,
         "integral_changes": {
             "first_order": (first.final_integrals - first.initial_integrals).tolist(),
             "second_order": (second.final_integrals - second.initial_integrals).tolist(),
+        },
+        "primitive_extrema": {
+            "first_order": {
+                "density": [float(first.primitive[0].min()), float(first.primitive[0].max())],
+                "velocity": [float(first.primitive[1].min()), float(first.primitive[1].max())],
+                "pressure": [float(first.primitive[2].min()), float(first.primitive[2].max())],
+            },
+            "second_order": {
+                "density": [float(second.primitive[0].min()), float(second.primitive[0].max())],
+                "velocity": [float(second.primitive[1].min()), float(second.primitive[1].max())],
+                "pressure": [float(second.primitive[2].min()), float(second.primitive[2].max())],
+            },
         },
     }
     metadata_path = args.output.with_suffix(".json")
