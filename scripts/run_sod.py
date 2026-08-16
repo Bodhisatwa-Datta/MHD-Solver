@@ -30,7 +30,7 @@ def main() -> None:
     base = HydroConfig(cells=args.cells, final_time=args.final_time, cfl=args.cfl)
     first = solve(replace(base, order=1), sod_shock_tube)
     second = solve(replace(base, order=2), sod_shock_tube)
-    exact_primitive = exact_sod(second.x, second.time, second.gamma if hasattr(second, "gamma") else base.gamma)
+    exact_primitive = exact_sod(second.x, second.time, base.gamma)
     exact_energy = primitive_to_conserved(exact_primitive, base.gamma)[2]
 
     quantities = (
@@ -83,4 +83,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
