@@ -115,7 +115,7 @@ python scripts/run_divergence_cleaning.py
 ```
 
 This compares damped and undamped evolution of a controlled sinusoidal
-\(\nabla\cdot\mathbf B\) perturbation and writes
+$\nabla\cdot\mathbf B$ perturbation and writes
 `figures/divergence_cleaning.png` and
 `benchmarks/convergence/divergence_cleaning.json`.
 
@@ -135,7 +135,7 @@ Run the fast magnetic-rotor benchmark with:
 python scripts/run_magnetic_rotor.py
 ```
 
-The default command compares 64² and 128² runs at \(t=0.15\), using outflow
+The default command compares 64² and 128² runs at $t=0.15$, using outflow
 boundaries, and saves `figures/magnetic_rotor.png` and its JSON diagnostics.
 
 Run the analytical magnetic-diffusion convergence test with:
