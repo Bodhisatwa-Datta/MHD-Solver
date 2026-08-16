@@ -106,3 +106,35 @@ by 0.09, matching the boundary total-pressure imbalance over \(t=0.1\), while
 y-momentum changed by -0.15, matching the boundary magnetic-stress flux. Since
 \(B_x\) is constant by construction, the one-dimensional divergence error is
 zero. Complete parameters and extrema are stored in `figures/brio_wu.json`.
+
+## Circularly polarized Alfvén wave
+
+The convergence test uses \(\rho=1\), \(p=0.1\), \(B_x=1\), transverse
+amplitude 0.1, wavelength 1, and \(\gamma=5/3\) on the periodic unit domain.
+The Alfvén speed is one, so the solution returns to its initial position at
+\(t=1\). Runs used HLL fluxes and CFL 0.4.
+
+The error norm is the mean magnitude of the transverse magnetic-field error,
+
+\[
+L_1=\frac{1}{N}\sum_i\sqrt{(B_{y,i}-B_{y,i}^{exact})^2+
+(B_{z,i}-B_{z,i}^{exact})^2}.
+\]
+
+| Cells | First-order \(L_1\) | Order | MUSCL + RK2 \(L_1\) | Order |
+|---:|---:|---:|---:|---:|
+| 50  | 2.13331e-2 | —     | 5.13395e-3 | —     |
+| 100 | 1.13071e-2 | 0.916 | 1.54999e-3 | 1.728 |
+| 200 | 5.82433e-3 | 0.957 | 4.31538e-4 | 1.845 |
+| 400 | 2.95661e-3 | 0.978 | 1.17674e-4 | 1.875 |
+
+The first-order method approaches order one and MUSCL with SSP-RK2 approaches
+order two. The limiter reduces the observed rate near smooth extrema, as in the
+hydrodynamic density-wave test. At 400 cells, the second-order transverse
+velocity error was \(1.16983\times10^{-4}\). Across all resolutions, changes in
+the seven evolved integrals were no larger than \(2.22\times10^{-16}\), and
+\(\partial_x B_x=0\) exactly by construction.
+
+The measured data and figure are stored in
+`benchmarks/convergence/alfven_wave_convergence.json` and
+`figures/alfven_wave_convergence.png`.

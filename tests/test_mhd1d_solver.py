@@ -3,11 +3,20 @@ import unittest
 import numpy as np
 
 from mhd_solver.mhd1d.equations import primitive_to_conserved
-from mhd_solver.mhd1d.initial_conditions import brio_wu_shock_tube
+from mhd_solver.mhd1d.initial_conditions import (
+    brio_wu_shock_tube,
+    circularly_polarized_alfven_wave,
+)
 from mhd_solver.mhd1d.solver import MHD1DConfig, solve
 
 
 class MHD1DSolverTests(unittest.TestCase):
+    def test_alfven_wave_returns_after_one_period(self) -> None:
+        x = np.linspace(0.0, 1.0, 17, endpoint=False)
+        initial = circularly_polarized_alfven_wave(x, time=0.0)
+        one_period = circularly_polarized_alfven_wave(x, time=1.0)
+        np.testing.assert_allclose(one_period, initial, atol=1.0e-14)
+
     def test_uniform_state_is_preserved_for_both_orders(self) -> None:
         state = np.array([1.0, 0.2, -0.1, 0.05, 1.0, 0.4, -0.2])
 
@@ -53,3 +62,29 @@ class MHD1DSolverTests(unittest.TestCase):
         np.testing.assert_allclose(
             result.final_integrals, result.initial_integrals, atol=2.0e-14
         )
+
+    def test_alfven_wave_second_order_error_falls_under_refinement(self) -> None:
+        errors = []
+        for cells in (40, 80):
+            config = MHD1DConfig(
+                cells=cells,
+                x_min=0.0,
+                x_max=1.0,
+                final_time=0.25,
+                gamma=5.0 / 3.0,
+                cfl=0.4,
+                order=2,
+                boundary="periodic",
+                longitudinal_field=1.0,
+            )
+            result = solve(config, circularly_polarized_alfven_wave)
+            exact = circularly_polarized_alfven_wave(result.x, time=result.time)
+            field_error = np.sqrt(
+                (result.primitive[5] - exact[5]) ** 2
+                + (result.primitive[6] - exact[6]) ** 2
+            )
+            errors.append(float(np.mean(field_error)))
+            np.testing.assert_allclose(
+                result.final_integrals, result.initial_integrals, atol=3.0e-13
+            )
+        self.assertGreater(errors[0] / errors[1], 3.0)

@@ -4,7 +4,7 @@ A progressively developed finite-volume solver for compressible hydrodynamics an
 magnetohydrodynamics. This is a readable, reproducible computational-physics
 codebase rather than a production simulation package.
 
-## Current status: Phase 2, 1D ideal MHD
+## Current status: Phase 2, validated 1D ideal MHD
 
 The implemented model is the one-dimensional compressible Euler system
 
@@ -29,7 +29,8 @@ Implemented numerical features:
 
 The validated hydrodynamics baseline is retained. The first 1D ideal-MHD
 increment adds seven-variable state conversions, ideal-MHD fluxes, the fast
-magnetosonic speed, an HLL MHD solver, and the Brio-Wu shock tube. The
+magnetosonic speed, an HLL MHD solver, the Brio-Wu shock tube, and exact
+Alfvén-wave convergence. The
 longitudinal field is constant in 1D, satisfying the divergence constraint in
 this restricted geometry.
 
@@ -74,6 +75,17 @@ python scripts/run_brio_wu.py
 The default calculation uses 800 cells plus a 1600-cell sensitivity run and
 writes `figures/brio_wu.png` and `figures/brio_wu.json`.
 
+Run the exact circularly polarized Alfvén-wave convergence study with:
+
+```bash
+python scripts/run_alfven_convergence.py
+```
+
+It evolves one periodic domain crossing at 50, 100, 200, and 400 cells, compares
+against the exact nonlinear solution, and writes
+`figures/alfven_wave_convergence.png` plus
+`benchmarks/convergence/alfven_wave_convergence.json`.
+
 ## Tests
 
 ```bash
@@ -95,7 +107,7 @@ evolution, smooth-wave convergence, and conservation.
 ```text
 src/mhd_solver/common/     equation of state, reconstruction, HLL flux
 src/mhd_solver/hydro1d/    Euler solver, initial data, exact Sod solution
-src/mhd_solver/mhd1d/      ideal-MHD equations, solver, Brio-Wu initial data
+src/mhd_solver/mhd1d/      ideal-MHD equations, solver, Brio-Wu and Alfvén data
 scripts/                   reproducible benchmark entry points
 tests/                     automated unit and integration tests
 docs/                      equations, method, and validation record
@@ -109,8 +121,9 @@ Settings use immutable `HydroConfig` and `MHD1DConfig` objects and are exposed b
 the benchmark scripts. The uniform-grid solvers have no AMR, source terms,
 non-ideal equation of state, or multidimensional support. Both outflow and
 periodic boundaries are available. HLL is robust but smears contact and
-Alfvénic waves. MUSCL is formally second order only in smooth regions. The MHD
-implementation has not yet passed a smooth Alfvén-wave convergence study.
+Alfvénic waves. MUSCL is formally second order only in smooth regions. The 1D
+formulation keeps \(B_x\) constant by construction; multidimensional divergence
+control remains unimplemented.
 
 See [the equations](docs/equations.md), [the numerical method](docs/numerical_method.md),
 and [the validation record](docs/validation.md) for scientific details.
@@ -118,7 +131,7 @@ and [the validation record](docs/validation.md) for scientific details.
 ## Roadmap
 
 1. Hydrodynamics baseline (validated)
-2. 1D ideal MHD: HLL and Brio-Wu implemented; Alfvén convergence pending
+2. 1D ideal MHD: HLL, Brio-Wu, and Alfvén convergence (validated)
 3. 2D ideal MHD with divergence cleaning
 4. Explicit resistive MHD validated against magnetic diffusion
 5. Harris-sheet reconnection experiments

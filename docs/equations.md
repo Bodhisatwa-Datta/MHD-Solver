@@ -78,3 +78,22 @@ v_xB_z-v_zB_x
 Because \(B_x\) is constant, \(\nabla\cdot\mathbf B=\partial_xB_x=0\)
 identically. This one-dimensional property does not replace divergence control
 in a future multidimensional solver.
+
+## Exact circularly polarized Alfvén wave
+
+The smooth MHD convergence problem uses constant \(\rho_0\), \(p_0\), and
+\(B_x\), with
+
+\[
+B_y=A\cos(k[x-v_At]),\qquad B_z=A\sin(k[x-v_At]),
+\]
+
+\[
+v_y=-\frac{B_y}{\sqrt{\rho_0}},\qquad
+v_z=-\frac{B_z}{\sqrt{\rho_0}},\qquad
+v_A=\frac{B_x}{\sqrt{\rho_0}}.
+\]
+
+Because \(|\mathbf B_\perp|=A\) is constant, magnetic pressure is uniform. This
+circular polarization is an exact finite-amplitude ideal-MHD solution rather
+than a linearized wave.
