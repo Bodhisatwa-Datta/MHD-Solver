@@ -56,6 +56,12 @@ Run `python scripts/run_sod.py --help` for configurable parameters.
 python -m pytest
 ```
 
+The suite is also compatible with the Python standard library runner:
+
+```bash
+python -m unittest discover -s tests
+```
+
 The tests cover equation-of-state conversions, fluxes, reconstruction, outflow
 boundaries, uniform-state preservation, Sod evolution, and conservation.
 
