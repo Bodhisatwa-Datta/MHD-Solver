@@ -1,0 +1,63 @@
+{
+  "problem": "sinusoidal magnetic diffusion",
+  "configuration_at_finest_resolution": {
+    "nx": 128,
+    "ny": 128,
+    "x_min": 0.0,
+    "x_max": 1.0,
+    "y_min": 0.0,
+    "y_max": 1.0,
+    "final_time": 0.05,
+    "gamma": 1.6666666666666667,
+    "cfl": 0.35,
+    "order": 2,
+    "boundary": "periodic",
+    "cleaning_speed": 2.0,
+    "cleaning_damping_rate": 0.0,
+    "resistivity": 0.1,
+    "diffusion_cfl": 0.8,
+    "max_steps": 1000000
+  },
+  "wave_amplitude": 0.001,
+  "resolutions": [
+    16,
+    32,
+    64,
+    128
+  ],
+  "field_y_L1_errors": [
+    1.1053718306329999e-05,
+    2.9915370864430293e-06,
+    7.579149293546517e-07,
+    1.893619768804713e-07
+  ],
+  "experimental_orders": [
+    null,
+    1.885572898920406,
+    1.980779118189823,
+    2.000889252510428
+  ],
+  "steps": [
+    10,
+    26,
+    103,
+    410
+  ],
+  "total_energy_changes": [
+    -2.220446049250313e-16,
+    0.0,
+    0.0,
+    1.3322676295501878e-15
+  ],
+  "final_magnetic_energies": [
+    1.6236408288087196e-07,
+    1.6714775282048986e-07,
+    1.6815802541139887e-07,
+    1.6838525992019814e-07
+  ],
+  "exact_final_magnetic_energy": 1.684563628078584e-07,
+  "finest_pressure_range": [
+    0.9999999389585217,
+    1.0000001703766574
+  ]
+}

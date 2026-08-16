@@ -4,7 +4,7 @@ A progressively developed finite-volume solver for compressible hydrodynamics an
 magnetohydrodynamics. This is a readable, reproducible computational-physics
 codebase rather than a production simulation package.
 
-## Current status: Phase 3, validated 2D ideal MHD
+## Current status: Phase 4, validated uniform resistivity
 
 The implemented model is the one-dimensional compressible Euler system
 
@@ -40,6 +40,10 @@ fills, and damped generalized-Lagrange-multiplier (GLM) divergence cleaning. A
 controlled divergence perturbation, nonlinear Orszag–Tang vortex, and fast
 magnetic rotor have been validated. The 2D benchmarks are resolution-sensitive
 and use GLM cleaning rather than constrained transport.
+
+Uniform explicit resistivity is now included in the induction and total-energy
+equations. It has passed a second-order sinusoidal magnetic-diffusion convergence
+test. Spatially varying resistivity and magnetic reconnection remain pending.
 
 ## Installation
 
@@ -123,6 +127,16 @@ python scripts/run_magnetic_rotor.py
 The default command compares 64² and 128² runs at \(t=0.15\), using outflow
 boundaries, and saves `figures/magnetic_rotor.png` and its JSON diagnostics.
 
+Run the analytical magnetic-diffusion convergence test with:
+
+```bash
+python scripts/run_magnetic_diffusion.py
+```
+
+The benchmark uses 16² through 128² grids, verifies the explicit parabolic
+timestep restriction and total-energy conservation, and saves its measured
+orders in `benchmarks/convergence/magnetic_diffusion_convergence.json`.
+
 ## Tests
 
 ```bash
@@ -146,6 +160,7 @@ src/mhd_solver/common/     equation of state, reconstruction, HLL flux
 src/mhd_solver/hydro1d/    Euler solver, initial data, exact Sod solution
 src/mhd_solver/mhd1d/      ideal-MHD equations, solver, Brio-Wu and Alfvén data
 src/mhd_solver/mhd2d/      Cartesian GLM-MHD equations, solver, boundaries
+src/mhd_solver/resistive/  resistive operator and analytical diffusion state
 scripts/                   reproducible benchmark entry points
 tests/                     automated unit and integration tests
 docs/                      equations, method, and validation record
@@ -171,5 +186,5 @@ and [the validation record](docs/validation.md) for scientific details.
 1. Hydrodynamics baseline (validated)
 2. 1D ideal MHD: HLL, Brio-Wu, and Alfvén convergence (validated)
 3. 2D ideal MHD: GLM, Orszag–Tang, and magnetic rotor (validated)
-4. Explicit resistive MHD validated against magnetic diffusion
+4. Uniform resistive MHD: magnetic diffusion validated; reconnection pending
 5. Harris-sheet reconnection experiments

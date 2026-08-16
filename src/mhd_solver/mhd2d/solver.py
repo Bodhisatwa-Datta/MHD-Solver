@@ -15,6 +15,7 @@ from mhd_solver.mhd2d.equations import (
     hll_flux,
     primitive_to_conserved,
 )
+from mhd_solver.resistive.resistivity import resistive_rhs
 
 Order = Literal[1, 2]
 Boundary = Literal["outflow", "periodic"]
@@ -35,6 +36,8 @@ class MHD2DConfig:
     boundary: Boundary = "periodic"
     cleaning_speed: float = 2.0
     cleaning_damping_rate: float = 2.0
+    resistivity: float = 0.0
+    diffusion_cfl: float = 0.8
     max_steps: int = 1_000_000
 
     def __post_init__(self) -> None:
@@ -46,6 +49,8 @@ class MHD2DConfig:
             raise ValueError("invalid order or boundary type")
         if self.cleaning_speed <= 0.0 or self.cleaning_damping_rate < 0.0:
             raise ValueError("cleaning speed must be positive and damping non-negative")
+        if self.resistivity < 0.0 or not 0.0 < self.diffusion_cfl <= 1.0:
+            raise ValueError("resistivity must be non-negative and 0 < diffusion_cfl <= 1")
 
 
 @dataclass(frozen=True)
@@ -126,9 +131,16 @@ def _spatial_operator(conserved: np.ndarray, dx: float, dy: float, config: MHD2D
         y_left, y_right = _reconstruct(primitive, 1)
     flux_x = hll_flux(x_left, x_right, config.gamma, config.cleaning_speed, 0)
     flux_y = hll_flux(y_left, y_right, config.gamma, config.cleaning_speed, 1)
-    return -(
+    ideal_rhs = -(
         (flux_x[:, :, 1:] - flux_x[:, :, :-1]) / dx
         + (flux_y[:, 1:, :] - flux_y[:, :-1, :]) / dy
+    )
+    return ideal_rhs + resistive_rhs(
+        conserved_to_primitive(conserved, config.gamma, config.cleaning_speed),
+        config.resistivity,
+        dx,
+        dy,
+        config.boundary,
     )
 
 
@@ -142,7 +154,13 @@ def _stable_timestep(conserved: np.ndarray, dx: float, dy: float, config: MHD2DC
         np.abs(primitive[2])
         + np.maximum(fast_magnetosonic_speed(primitive, config.gamma, 1), config.cleaning_speed)
     )
-    return config.cfl / (speed_x / dx + speed_y / dy)
+    hyperbolic_dt = config.cfl / (speed_x / dx + speed_y / dy)
+    if config.resistivity == 0.0:
+        return hyperbolic_dt
+    diffusion_limit = 1.0 / (
+        2.0 * config.resistivity * (1.0 / dx**2 + 1.0 / dy**2)
+    )
+    return min(hyperbolic_dt, config.diffusion_cfl * diffusion_limit)
 
 
 def _damp_cleaning_field(conserved: np.ndarray, dt: float, config: MHD2DConfig) -> np.ndarray:

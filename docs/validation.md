@@ -280,3 +280,35 @@ The large-scale morphology agrees, but the density difference confirms that the
 rotor edge and torsional fronts are not grid-converged. This is a qualitative
 benchmark and resolution-sensitivity result. Full diagnostics and the generated
 figure are `figures/magnetic_rotor.json` and `figures/magnetic_rotor.png`.
+
+## Uniform magnetic diffusion
+
+The resistive implementation was tested using the analytical decay
+
+\[
+B_y(x,t)=10^{-3}\exp[-\eta(2\pi)^2t]\sin(2\pi x)
+\]
+
+on a periodic unit square with \(\eta=0.1\), \(\rho=p=1\), \(\gamma=5/3\), and
+zero velocity. The weak amplitude isolates the diffusion operator from
+Lorentz-force feedback while still evolving the complete MHD state. Runs reached
+\(t=0.05\) using MUSCL, SSP-RK2, HLL, and the explicit diffusion timestep limit.
+
+| Cells per direction | \(B_y\) mean absolute error | Order |
+|---:|---:|---:|
+| 16  | 1.10537e-5 | — |
+| 32  | 2.99154e-6 | 1.886 |
+| 64  | 7.57915e-7 | 1.981 |
+| 128 | 1.89362e-7 | 2.001 |
+
+The measured rate approaches the expected second order. At 128², numerical
+magnetic energy was \(1.6838526\times10^{-7}\), compared with the analytical
+\(1.6845636\times10^{-7}\). Total-energy changes across all resolutions were no
+larger than \(1.33\times10^{-15}\). The finest pressure remained between
+0.999999939 and 1.000000170 as magnetic energy was redistributed into heat.
+
+This validates uniform resistive diffusion and its energy coupling in a smooth,
+weak-field regime. It does not yet validate spatially varying resistivity,
+current-sheet evolution, or reconnection. The measured data and figure are
+`benchmarks/convergence/magnetic_diffusion_convergence.json` and
+`figures/magnetic_diffusion_convergence.png`.

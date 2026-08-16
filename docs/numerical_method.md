@@ -120,3 +120,23 @@ damping does not spuriously heat the gas.
 The diagnostic \(\|\nabla\cdot\mathbf B\|_2\) uses centred differences. GLM is
 simple and compatible with cell-centred fields, but it controls rather than
 eliminates divergence. Constrained transport is intentionally deferred.
+
+# Explicit resistive update
+
+Uniform resistivity adds centred second-order Laplacians to all three magnetic
+components. Cell-centred currents are computed with centred differences, and
+the conservative energy contribution is
+\(-\nabla\cdot[\eta(\mathbf J\times\mathbf B)]\). These terms are included in
+both SSP-RK2 stages rather than applied as a first-order operator split.
+
+In addition to the hyperbolic CFL condition, each timestep satisfies
+
+\[
+\Delta t_\eta \leq C_\eta
+\left[2\eta\left(\Delta x^{-2}+\Delta y^{-2}\right)\right]^{-1},
+\]
+
+with \(C_\eta=0.8\) by default. This restriction becomes expensive at high
+resolution because \(\Delta t_\eta\propto\Delta x^2\); super-time-stepping or an
+implicit method may be justified later, but is deliberately not introduced
+before the explicit implementation is validated.

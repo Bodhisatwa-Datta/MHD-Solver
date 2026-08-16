@@ -129,3 +129,35 @@ Thus divergence errors propagate at speed \(c_h\) and decay through the damping
 rate \(\kappa\). The implementation is based on the hyperbolic/parabolic GLM
 idea of Dedner et al., *Journal of Computational Physics* 175 (2002), 645–673,
 [doi:10.1006/jcph.2001.6961](https://doi.org/10.1006/jcph.2001.6961).
+
+# Uniform resistive MHD
+
+For constant scalar resistivity \(\eta\), the induction equation becomes
+
+\[
+\frac{\partial\mathbf B}{\partial t}
+=\nabla\times(\mathbf v\times\mathbf B)+\eta\nabla^2\mathbf B,
+\]
+
+where the Laplacian form assumes \(\nabla\cdot\mathbf B=0\). The implementation
+also includes the resistive contribution to the conservative total-energy flux,
+
+\[
+\mathbf F_{E,\eta}=\eta\,\mathbf J\times\mathbf B,
+\qquad \mathbf J=\nabla\times\mathbf B.
+\]
+
+This transports resistive electromagnetic energy and converts decaying magnetic
+energy into internal energy while conserving periodic-domain total energy.
+
+For a stationary, weak, divergence-free sinusoidal field,
+
+\[
+B_y(x,0)=A\sin(kx),
+\]
+
+the magnetic diffusion equation has the analytical solution
+
+\[
+B_y(x,t)=A\exp(-\eta k^2t)\sin(kx).
+\]
