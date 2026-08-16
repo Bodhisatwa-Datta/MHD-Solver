@@ -1,4 +1,4 @@
-# Numerical method: Phase 1
+# Numerical method
 
 ## Finite-volume update
 
@@ -61,3 +61,31 @@ Each timestep obeys
 
 and the last step is shortened to reach the requested final time exactly. The
 default CFL number is 0.8.
+
+# One-dimensional ideal MHD
+
+The MHD solver reuses the finite-volume mesh, boundary fills, minmod
+reconstruction, and SSP-RK2 method. Primitive reconstruction acts on
+\((\rho,v_x,v_y,v_z,p,B_y,B_z)\), with density and gas-pressure checks before
+interface states enter the Riemann solver.
+
+For propagation along x, define
+
+\[
+a^2=\frac{\gamma p}{\rho},\quad
+v_A^2=\frac{|\mathbf B|^2}{\rho},\quad
+v_{Ax}^2=\frac{B_x^2}{\rho}.
+\]
+
+The fast magnetosonic speed is
+
+\[
+c_f^2=\frac{1}{2}\left[a^2+v_A^2+
+\sqrt{(a^2+v_A^2)^2-4a^2v_{Ax}^2}\right].
+\]
+
+MHD HLL uses \(S_L=\min(v_{x,L}-c_{f,L},v_{x,R}-c_{f,R})\) and
+\(S_R=\max(v_{x,L}+c_{f,L},v_{x,R}+c_{f,R})\). The CFL speed is
+\(\max_i(|v_{x,i}|+c_{f,i})\). HLL is deliberately used before HLLD: it is
+robust and auditable, but diffuses contact and Alfvénic waves because it retains
+only the two outer signal speeds.

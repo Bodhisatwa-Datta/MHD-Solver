@@ -69,3 +69,40 @@ contact transport, formal convergence, and periodic conservation. A stronger
 shock test would further broaden the hydrodynamic validation envelope, but the
 present baseline now covers the principal requirements needed before the 1D MHD
 extension.
+
+## Brio-Wu ideal-MHD shock tube
+
+The standard left and right primitive states are
+
+| State | \(\rho\) | \(p\) | \(B_y\) | \(v_x,v_y,v_z\) | \(B_z\) |
+|---|---:|---:|---:|---:|---:|
+| Left  | 1.0   | 1.0 | 1.0  | 0 | 0 |
+| Right | 0.125 | 0.1 | -1.0 | 0 | 0 |
+
+with \(B_x=0.75\), \(\gamma=2\), a discontinuity at \(x=0\), and transmissive
+boundaries on \([-0.5,0.5]\). The benchmark originates with Brio and Wu,
+*Journal of Computational Physics* 75 (1988), 400–422,
+[doi:10.1016/0021-9991(88)90120-9](https://doi.org/10.1016/0021-9991(88)90120-9).
+
+The committed run reached \(t=0.1\) using HLL, MUSCL-minmod, SSP-RK2, CFL 0.4,
+and 800 cells. A separate 1600-cell run was overlaid and restricted to the
+800-cell mesh for resolution sensitivity:
+
+| Quantity | 800 vs restricted-1600 \(L_1\) difference |
+|---|---:|
+| Density | 1.78909e-3 |
+| Longitudinal velocity | 3.17995e-3 |
+| Transverse velocity | 4.53666e-3 |
+| Gas pressure | 1.69215e-3 |
+| Transverse field \(B_y\) | 2.30918e-3 |
+
+The state remained finite, with minimum density 0.11707 and minimum gas pressure
+0.08773. The profiles show the multi-wave MHD structure, and the resolutions
+agree closely away from discontinuities. This is resolution sensitivity, not an
+error measured against an exact solution.
+
+Mass and total energy changed by at most roundoff. Integrated x-momentum changed
+by 0.09, matching the boundary total-pressure imbalance over \(t=0.1\), while
+y-momentum changed by -0.15, matching the boundary magnetic-stress flux. Since
+\(B_x\) is constant by construction, the one-dimensional divergence error is
+zero. Complete parameters and extrema are stored in `figures/brio_wu.json`.

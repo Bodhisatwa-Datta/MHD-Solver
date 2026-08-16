@@ -1,4 +1,4 @@
-# Governing equations: Phase 1
+# Governing equations
 
 The one-dimensional compressible Euler equations are solved in conservation form,
 
@@ -43,3 +43,38 @@ v_0=1,\qquad p_0=1
 
 on a unit periodic domain. This is an exact nonlinear Euler solution, so its
 error is not contaminated by a linearisation or separately computed reference.
+
+# One-dimensional ideal MHD
+
+In units with magnetic permeability equal to one, the evolved state is
+
+\[
+\mathbf U=(\rho,\rho v_x,\rho v_y,\rho v_z,E,B_y,B_z)^T.
+\]
+
+The longitudinal field \(B_x\) is spatially constant in 1D and is supplied as a
+parameter. Total energy and total pressure are
+
+\[
+E=\frac{p}{\gamma-1}+\frac{1}{2}\rho|\mathbf v|^2+
+\frac{1}{2}|\mathbf B|^2,\qquad
+p_t=p+\frac{1}{2}|\mathbf B|^2.
+\]
+
+The x-directed flux is
+
+\[
+\mathbf F=\begin{pmatrix}
+\rho v_x\\
+\rho v_x^2+p_t-B_x^2\\
+\rho v_xv_y-B_xB_y\\
+\rho v_xv_z-B_xB_z\\
+(E+p_t)v_x-B_x(\mathbf v\cdot\mathbf B)\\
+v_xB_y-v_yB_x\\
+v_xB_z-v_zB_x
+\end{pmatrix}.
+\]
+
+Because \(B_x\) is constant, \(\nabla\cdot\mathbf B=\partial_xB_x=0\)
+identically. This one-dimensional property does not replace divergence control
+in a future multidimensional solver.

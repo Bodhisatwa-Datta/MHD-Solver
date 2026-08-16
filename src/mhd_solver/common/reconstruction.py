@@ -15,7 +15,11 @@ def minmod(left_difference: np.ndarray, right_difference: np.ndarray) -> np.ndar
     )
 
 
-def muscl_interface_states(primitive_with_ghosts: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def muscl_interface_states(
+    primitive_with_ghosts: np.ndarray,
+    density_index: int = 0,
+    pressure_index: int = 2,
+) -> tuple[np.ndarray, np.ndarray]:
     """Reconstruct primitive states at interfaces using two ghosts per side.
 
     A side whose reconstructed density or pressure is non-positive locally
@@ -31,9 +35,8 @@ def muscl_interface_states(primitive_with_ghosts: np.ndarray) -> tuple[np.ndarra
     right_cells = values[:, 2:-1]
     left = left_cells + 0.5 * slopes[:, 1:-2]
     right = right_cells - 0.5 * slopes[:, 2:-1]
-    bad_left = (left[0] <= 0.0) | (left[2] <= 0.0)
-    bad_right = (right[0] <= 0.0) | (right[2] <= 0.0)
+    bad_left = (left[density_index] <= 0.0) | (left[pressure_index] <= 0.0)
+    bad_right = (right[density_index] <= 0.0) | (right[pressure_index] <= 0.0)
     left[:, bad_left] = left_cells[:, bad_left]
     right[:, bad_right] = right_cells[:, bad_right]
     return left, right
-
