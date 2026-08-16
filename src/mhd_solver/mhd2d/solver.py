@@ -34,6 +34,8 @@ class MHD2DConfig:
     cfl: float = 0.35
     order: Order = 2
     boundary: Boundary = "periodic"
+    boundary_x: Boundary | None = None
+    boundary_y: Boundary | None = None
     cleaning_speed: float = 2.0
     cleaning_damping_rate: float = 2.0
     resistivity: float = 0.0
@@ -47,10 +49,24 @@ class MHD2DConfig:
             raise ValueError("require final_time >= 0, gamma > 1, and 0 < CFL <= 1")
         if self.order not in (1, 2) or self.boundary not in ("outflow", "periodic"):
             raise ValueError("invalid order or boundary type")
+        if self.boundary_x not in (None, "outflow", "periodic") or self.boundary_y not in (
+            None,
+            "outflow",
+            "periodic",
+        ):
+            raise ValueError("invalid directional boundary type")
         if self.cleaning_speed <= 0.0 or self.cleaning_damping_rate < 0.0:
             raise ValueError("cleaning speed must be positive and damping non-negative")
         if self.resistivity < 0.0 or not 0.0 < self.diffusion_cfl <= 1.0:
             raise ValueError("resistivity must be non-negative and 0 < diffusion_cfl <= 1")
+
+    @property
+    def resolved_boundary_x(self) -> Boundary:
+        return self.boundary if self.boundary_x is None else self.boundary_x
+
+    @property
+    def resolved_boundary_y(self) -> Boundary:
+        return self.boundary if self.boundary_y is None else self.boundary_y
 
 
 @dataclass(frozen=True)
@@ -80,15 +96,22 @@ def conserved_integrals(conserved: np.ndarray, dx: float, dy: float) -> np.ndarr
 
 
 def magnetic_divergence(
-    primitive: np.ndarray, dx: float, dy: float, boundary: Boundary
+    primitive: np.ndarray,
+    dx: float,
+    dy: float,
+    boundary_x: Boundary,
+    boundary_y: Boundary | None = None,
 ) -> np.ndarray:
     """Return a cell-centred second-order estimate of ``div(B)``."""
     bx, by = primitive[5], primitive[6]
-    if boundary == "periodic":
+    boundary_y = boundary_x if boundary_y is None else boundary_y
+    if boundary_x == "periodic":
         derivative_x = (np.roll(bx, -1, axis=1) - np.roll(bx, 1, axis=1)) / (2.0 * dx)
-        derivative_y = (np.roll(by, -1, axis=0) - np.roll(by, 1, axis=0)) / (2.0 * dy)
     else:
         derivative_x = np.gradient(bx, dx, axis=1, edge_order=2)
+    if boundary_y == "periodic":
+        derivative_y = (np.roll(by, -1, axis=0) - np.roll(by, 1, axis=0)) / (2.0 * dy)
+    else:
         derivative_y = np.gradient(by, dy, axis=0, edge_order=2)
     return derivative_x + derivative_y
 
@@ -120,8 +143,12 @@ def _reconstruct(primitive: np.ndarray, direction: int) -> tuple[np.ndarray, np.
     return left, right
 
 
-def _spatial_operator(conserved: np.ndarray, dx: float, dy: float, config: MHD2DConfig) -> np.ndarray:
-    extended = fill_boundaries(conserved, config.boundary)
+def _spatial_operator(
+    conserved: np.ndarray, dx: float, dy: float, config: MHD2DConfig
+) -> np.ndarray:
+    extended = fill_boundaries(
+        conserved, config.resolved_boundary_x, config.resolved_boundary_y
+    )
     primitive = conserved_to_primitive(extended, config.gamma, config.cleaning_speed)
     if config.order == 1:
         x_left, x_right = primitive[:, 2:-2, 1:-2], primitive[:, 2:-2, 2:-1]
@@ -140,7 +167,7 @@ def _spatial_operator(conserved: np.ndarray, dx: float, dy: float, config: MHD2D
         config.resistivity,
         dx,
         dy,
-        config.boundary,
+        (config.resolved_boundary_x, config.resolved_boundary_y),
     )
 
 
@@ -189,7 +216,22 @@ def solve(
     time = 0.0
     primitive = conserved_to_primitive(conserved, config.gamma, config.cleaning_speed)
     divergence_times = [time]
-    divergence_l2 = [float(np.sqrt(np.mean(magnetic_divergence(primitive, dx, dy, config.boundary) ** 2)))]
+    divergence_l2 = [
+        float(
+            np.sqrt(
+                np.mean(
+                    magnetic_divergence(
+                        primitive,
+                        dx,
+                        dy,
+                        config.resolved_boundary_x,
+                        config.resolved_boundary_y,
+                    )
+                    ** 2
+                )
+            )
+        )
+    ]
 
     for step in range(1, config.max_steps + 1):
         if time >= config.final_time:
@@ -213,6 +255,19 @@ def solve(
         time += dt
         divergence_times.append(time)
         divergence_l2.append(
-            float(np.sqrt(np.mean(magnetic_divergence(primitive, dx, dy, config.boundary) ** 2)))
+            float(
+                np.sqrt(
+                    np.mean(
+                        magnetic_divergence(
+                            primitive,
+                            dx,
+                            dy,
+                            config.resolved_boundary_x,
+                            config.resolved_boundary_y,
+                        )
+                        ** 2
+                    )
+                )
+            )
         )
     raise RuntimeError(f"maximum step count ({config.max_steps}) reached at t={time:.6e}")

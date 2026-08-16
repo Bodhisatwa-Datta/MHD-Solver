@@ -2,15 +2,77 @@ import unittest
 
 import numpy as np
 
+from mhd_solver.mhd2d.boundaries import fill_boundaries
 from mhd_solver.mhd2d.initial_conditions import (
     divergence_perturbation,
     magnetic_rotor,
     orszag_tang_vortex,
 )
 from mhd_solver.mhd2d.solver import MHD2DConfig, magnetic_divergence, solve
+from mhd_solver.reconnection.initial_conditions import harris_current_sheet
 
 
 class MHD2DSolverTests(unittest.TestCase):
+    def test_mixed_boundaries_wrap_x_and_copy_y(self) -> None:
+        values = np.arange(12).reshape(1, 3, 4)
+        padded = fill_boundaries(values, "periodic", "outflow", ghosts=1)
+        np.testing.assert_array_equal(padded[:, 1:-1, 0], values[:, :, -1])
+        np.testing.assert_array_equal(padded[:, 1:-1, -1], values[:, :, 0])
+        np.testing.assert_array_equal(padded[:, 0, 1:-1], values[:, 0, :])
+        np.testing.assert_array_equal(padded[:, -1, 1:-1], values[:, -1, :])
+
+    def test_harris_sheet_is_pressure_balanced_and_divergence_free(self) -> None:
+        config = MHD2DConfig(
+            nx=24,
+            ny=32,
+            y_min=-0.5,
+            y_max=0.5,
+            final_time=0.0,
+            boundary_x="periodic",
+            boundary_y="outflow",
+        )
+        dx = (config.x_max - config.x_min) / config.nx
+        dy = (config.y_max - config.y_min) / config.ny
+        x = config.x_min + (np.arange(config.nx) + 0.5) * dx
+        y = config.y_min + (np.arange(config.ny) + 0.5) * dy
+        primitive = harris_current_sheet(x, y)
+        total_pressure = primitive[4] + 0.5 * primitive[5] ** 2
+        np.testing.assert_allclose(total_pressure, 0.7, rtol=0.0, atol=2.0e-15)
+        np.testing.assert_allclose(
+            primitive[4] / primitive[0], 0.2, rtol=0.0, atol=2.0e-15
+        )
+        divergence = magnetic_divergence(
+            primitive,
+            dx,
+            dy,
+            config.resolved_boundary_x,
+            config.resolved_boundary_y,
+        )
+        self.assertLess(float(np.sqrt(np.mean(divergence**2))), 1.0e-13)
+
+    def test_harris_sheet_short_evolution_remains_physical(self) -> None:
+        result = solve(
+            MHD2DConfig(
+                nx=16,
+                ny=32,
+                y_min=-0.5,
+                y_max=0.5,
+                final_time=0.01,
+                gamma=5.0 / 3.0,
+                cfl=0.3,
+                boundary_x="periodic",
+                boundary_y="outflow",
+                cleaning_speed=2.0,
+                cleaning_damping_rate=2.0,
+            ),
+            harris_current_sheet,
+        )
+        speed = np.sqrt(result.primitive[1] ** 2 + result.primitive[2] ** 2)
+        self.assertGreater(result.primitive[0].min(), 0.0)
+        self.assertGreater(result.primitive[4].min(), 0.0)
+        self.assertLess(float(speed.max()), 0.02)
+        self.assertLess(result.divergence_l2[-1], 1.0e-12)
+
     def test_magnetic_rotor_initial_state_and_divergence(self) -> None:
         config = MHD2DConfig(nx=32, ny=32, final_time=0.0, gamma=1.4, boundary="outflow")
         dx, dy = 1.0 / config.nx, 1.0 / config.ny

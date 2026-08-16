@@ -161,3 +161,27 @@ the magnetic diffusion equation has the analytical solution
 \[
 B_y(x,t)=A\exp(-\eta k^2t)\sin(kx).
 \]
+
+# Harris current-sheet equilibrium
+
+The unperturbed reconnection precursor uses a one-dimensional magnetic reversal
+embedded in the two-dimensional domain,
+
+\[
+B_x(y)=B_0\tanh(y/L),\qquad B_y=B_z=0.
+\]
+
+Force balance requires constant total pressure. With background gas pressure
+\(p_b\), the implemented profile is
+
+\[
+p(y)=p_b+\frac{B_0^2}{2}\operatorname{sech}^2(y/L),\qquad
+p(y)+\frac{B_x(y)^2}{2}=p_b+\frac{B_0^2}{2}.
+\]
+
+Density follows \(\rho(y)=p(y)/T_0\), where
+\(T_0=p_b/\rho_b\), so temperature is uniform. Velocity, the guide field, and
+the GLM field \(\psi\) are initially zero. The corresponding current is
+\(J_z=-\partial_y B_x\). The present validation sets \(\eta=0\) and applies no
+perturbation; finite resistivity would diffuse the sheet, so it would no longer
+be stationary.

@@ -312,3 +312,38 @@ weak-field regime. It does not yet validate spatially varying resistivity,
 current-sheet evolution, or reconnection. The measured data and figure are
 `benchmarks/convergence/magnetic_diffusion_convergence.json` and
 `figures/magnetic_diffusion_convergence.png`.
+
+## Unperturbed Harris current sheet
+
+Before introducing a reconnection seed, the ideal equilibrium was evolved on
+\([0,1]\times[-0.5,0.5]\) with periodic x boundaries and outflow y boundaries.
+The profiles use \(B_0=1\), half-width \(L=0.05\), background pressure 0.2,
+background density 1, and therefore constant temperature \(p/\rho=0.2\). Gas
+and magnetic pressure sum exactly to 0.7 in the initial cell-centred state.
+Runs used \(\gamma=5/3\), HLL, MUSCL-minmod, SSP-RK2, CFL 0.3, \(c_h=2\),
+\(\kappa=2\), and \(\eta=0\), reaching \(t=0.1\).
+
+| Diagnostic | 64² | 128² |
+|---|---:|---:|
+| Maximum velocity magnitude | 1.61973e-2 | 7.31778e-3 |
+| Density mean absolute drift | 4.16113e-2 | 1.22978e-2 |
+| Pressure mean absolute drift | 6.48233e-3 | 1.68035e-3 |
+| \(B_x\) mean absolute drift | 7.53765e-3 | 1.96195e-3 |
+| Maximum total-pressure error | 4.28531e-2 | 1.38532e-2 |
+| Maximum \(|J_z|\) | 17.8200 | 20.1640 |
+| Final \(\|\nabla\cdot\mathbf B\|_2\) | 0 | 0 |
+
+Refinement reduces every drift measure substantially: the density, pressure,
+and field drifts fall by factors 3.38, 3.86, and 3.84, respectively, while the
+maximum spurious velocity falls by a factor 2.21. The initial analytic peak
+current magnitude is \(B_0/L=20\), approached by the 128² discrete result.
+All nine evolved domain integrals are conserved to roundoff at 128², and
+divergence remains exactly zero because the solution preserves its x-invariant
+structure with \(B_y=0\).
+
+This demonstrates a stable, resolution-improving numerical equilibrium, not an
+exactly well-balanced discretization. HLL diffusion broadens the sheet and the
+discrete pressure/magnetic-stress balance launches small y-directed motions.
+Those measured errors set the baseline that a future seeded resistive
+reconnection run must exceed. The figure and full record are
+`figures/harris_equilibrium.png` and `figures/harris_equilibrium.json`.

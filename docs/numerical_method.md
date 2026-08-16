@@ -121,6 +121,10 @@ The diagnostic \(\|\nabla\cdot\mathbf B\|_2\) uses centred differences. GLM is
 simple and compatible with cell-centred fields, but it controls rather than
 eliminates divergence. Constrained transport is intentionally deferred.
 
+Periodic wrapping and zero-gradient outflow fills can be chosen independently
+in x and y. The Harris-sheet validation uses periodic x boundaries along the
+sheet and outflow y boundaries across it.
+
 # Explicit resistive update
 
 Uniform resistivity adds centred second-order Laplacians to all three magnetic

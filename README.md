@@ -4,7 +4,7 @@ A progressively developed finite-volume solver for compressible hydrodynamics an
 magnetohydrodynamics. This is a readable, reproducible computational-physics
 codebase rather than a production simulation package.
 
-## Current status: Phase 4, validated uniform resistivity
+## Current status: Phase 5, validated Harris-sheet equilibrium
 
 The implemented model is the one-dimensional compressible Euler system
 
@@ -41,9 +41,12 @@ controlled divergence perturbation, nonlinear Orszag–Tang vortex, and fast
 magnetic rotor have been validated. The 2D benchmarks are resolution-sensitive
 and use GLM cleaning rather than constrained transport.
 
-Uniform explicit resistivity is now included in the induction and total-energy
-equations. It has passed a second-order sinusoidal magnetic-diffusion convergence
-test. Spatially varying resistivity and magnetic reconnection remain pending.
+Uniform explicit resistivity is included in the induction and total-energy
+equations and has passed a second-order sinusoidal magnetic-diffusion convergence
+test. The first reconnection-phase increment adds independent x/y boundaries
+and a constant-temperature, total-pressure-balanced Harris current sheet. Its
+unperturbed ideal evolution has been checked at 64² and 128². A seeded,
+resistive reconnection experiment remains pending.
 
 ## Installation
 
@@ -137,6 +140,17 @@ The benchmark uses 16² through 128² grids, verifies the explicit parabolic
 timestep restriction and total-energy conservation, and saves its measured
 orders in `benchmarks/convergence/magnetic_diffusion_convergence.json`.
 
+Validate the unperturbed Harris current-sheet equilibrium with:
+
+```bash
+python scripts/run_harris_equilibrium.py
+```
+
+The benchmark uses periodic boundaries along the sheet and outflow boundaries
+across it, compares 64² and 128² grids through `t=0.1`, and records numerical
+drift before any reconnection perturbation is introduced. It writes
+`figures/harris_equilibrium.png` and `figures/harris_equilibrium.json`.
+
 ## Tests
 
 ```bash
@@ -161,6 +175,7 @@ src/mhd_solver/hydro1d/    Euler solver, initial data, exact Sod solution
 src/mhd_solver/mhd1d/      ideal-MHD equations, solver, Brio-Wu and Alfvén data
 src/mhd_solver/mhd2d/      Cartesian GLM-MHD equations, solver, boundaries
 src/mhd_solver/resistive/  resistive operator and analytical diffusion state
+src/mhd_solver/reconnection/  Harris-sheet and future reconnection states
 scripts/                   reproducible benchmark entry points
 tests/                     automated unit and integration tests
 docs/                      equations, method, and validation record
@@ -170,13 +185,14 @@ benchmarks/                future convergence and performance studies
 
 ## Reproducibility and limitations
 
-Settings use immutable `HydroConfig` and `MHD1DConfig` objects and are exposed by
-the benchmark scripts. The uniform-grid solvers have no AMR, source terms,
-non-ideal equation of state, or multidimensional support. Both outflow and
-periodic boundaries are available. HLL is robust but smears contact and
-Alfvénic waves. MUSCL is formally second order only in smooth regions. The 1D
-formulation keeps \(B_x\) constant by construction; multidimensional divergence
-control remains unimplemented.
+Settings use immutable configuration objects and are exposed by the benchmark
+scripts. The uniform-grid solvers have no AMR, viscosity, thermal conduction,
+or non-ideal equation of state. Outflow and periodic boundaries may be selected
+independently in x and y. HLL is robust but smears contacts, Alfvénic waves, and
+thin current sheets. MUSCL is formally second order only in smooth regions.
+Multidimensional divergence is controlled with GLM cleaning rather than
+constrained transport. The Harris state is not discretely well-balanced, so its
+small equilibrium drift decreases with refinement but is not identically zero.
 
 See [the equations](docs/equations.md), [the numerical method](docs/numerical_method.md),
 and [the validation record](docs/validation.md) for scientific details.
@@ -186,5 +202,6 @@ and [the validation record](docs/validation.md) for scientific details.
 1. Hydrodynamics baseline (validated)
 2. 1D ideal MHD: HLL, Brio-Wu, and Alfvén convergence (validated)
 3. 2D ideal MHD: GLM, Orszag–Tang, and magnetic rotor (validated)
-4. Uniform resistive MHD: magnetic diffusion validated; reconnection pending
-5. Harris-sheet reconnection experiments
+4. Uniform resistive MHD: magnetic diffusion validated
+5. Harris current sheet: unperturbed equilibrium validated; seeded resistive
+   reconnection pending

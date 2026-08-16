@@ -1,0 +1,95 @@
+{
+  "problem": "unperturbed ideal Harris current-sheet equilibrium",
+  "configuration_at_finest_resolution": {
+    "nx": 128,
+    "ny": 128,
+    "x_min": 0.0,
+    "x_max": 1.0,
+    "y_min": -0.5,
+    "y_max": 0.5,
+    "final_time": 0.1,
+    "gamma": 1.6666666666666667,
+    "cfl": 0.3,
+    "order": 2,
+    "boundary": "periodic",
+    "boundary_x": "periodic",
+    "boundary_y": "outflow",
+    "cleaning_speed": 2.0,
+    "cleaning_damping_rate": 2.0,
+    "resistivity": 0.0,
+    "diffusion_cfl": 0.8,
+    "max_steps": 1000000
+  },
+  "parameters": {
+    "magnetic_field": 1.0,
+    "half_width": 0.05,
+    "background_pressure": 0.2,
+    "background_density": 1.0,
+    "constant_temperature": 0.2,
+    "equilibrium_total_pressure": 0.7
+  },
+  "runs": [
+    {
+      "resolution": 64,
+      "steps": 86,
+      "maximum_speed": 0.01619734781764154,
+      "density_L1_drift": 0.041611307464895435,
+      "pressure_L1_drift": 0.006482327186394937,
+      "field_x_L1_drift": 0.007537651995512545,
+      "maximum_total_pressure_error": 0.042853121484387136,
+      "maximum_absolute_current_density": 17.819992850225642,
+      "final_divergence_L2": 0.0,
+      "dimensionless_divergence": 0.0,
+      "density_range": [
+        1.0000000877705422,
+        2.9726565112289856
+      ],
+      "pressure_range": [
+        0.2000000175540186,
+        0.6460773338774092
+      ],
+      "integral_changes": [
+        1.176836406102666e-14,
+        0.0,
+        0.0,
+        0.0,
+        1.7541523789077473e-14,
+        5.551115123125783e-17,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "resolution": 128,
+      "steps": 171,
+      "maximum_speed": 0.007317783667522945,
+      "density_L1_drift": 0.012297848599877228,
+      "pressure_L1_drift": 0.0016803510130589537,
+      "field_x_L1_drift": 0.0019619518406529886,
+      "maximum_total_pressure_error": 0.013853210767809654,
+      "maximum_absolute_current_density": 20.164042004989188,
+      "final_divergence_L2": 0.0,
+      "dimensionless_divergence": 0.0,
+      "density_range": [
+        1.0000000450970208,
+        3.290159831406341
+      ],
+      "pressure_range": [
+        0.20000000901940213,
+        0.6828456669774551
+      ],
+      "integral_changes": [
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ]
+}
