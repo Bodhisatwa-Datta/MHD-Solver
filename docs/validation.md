@@ -138,3 +138,35 @@ the seven evolved integrals were no larger than \(2.22\times10^{-16}\), and
 The measured data and figure are stored in
 `benchmarks/convergence/alfven_wave_convergence.json` and
 `figures/alfven_wave_convergence.png`.
+
+## Two-dimensional GLM divergence cleaning
+
+A small controlled perturbation
+\(B_x=10^{-3}\sin(2\pi x)\), with \(B_y=B_z=0\), was initialized on a periodic
+64×64 grid with \(\rho=p=1\). Both runs used MUSCL, SSP-RK2, HLL, CFL 0.35, and
+cleaning speed \(c_h=2\); one used no parabolic damping and the other used
+\(\kappa=2\).
+
+At \(t=1\), which compares the same cleaning-wave phase, the measured results
+were:
+
+| Diagnostic | Value |
+|---|---:|
+| Initial \(\|\nabla\cdot\mathbf B\|_2\) | 4.43575e-3 |
+| Final undamped norm | 4.33942e-3 |
+| Final damped norm | 1.59183e-3 |
+| Damped reduction factor | 2.7866 |
+| Damped total-energy change | -2.13037e-7 |
+
+The norm oscillates because the hyperbolic subsystem exchanges divergence error
+with \(\psi\); its envelope decays only in the damped run. The small energy loss
+is intentional removal of cleaning/divergence energy and is comparable to the
+initial perturbation magnetic energy. Minimum density and pressure remained
+0.999999995 and 0.999999994. Uniform 2D states are preserved to roundoff for
+both numerical orders.
+
+This test validates the cleaning subsystem in isolation. It does not yet
+validate nonlinear multidimensional MHD dynamics. Orszag–Tang is the next
+required benchmark. Data and the diagnostic figure are stored in
+`benchmarks/convergence/divergence_cleaning.json` and
+`figures/divergence_cleaning.png`.

@@ -89,3 +89,34 @@ MHD HLL uses \(S_L=\min(v_{x,L}-c_{f,L},v_{x,R}-c_{f,R})\) and
 \(\max_i(|v_{x,i}|+c_{f,i})\). HLL is deliberately used before HLLD: it is
 robust and auditable, but diffuses contact and Alfvénic waves because it retains
 only the two outer signal speeds.
+
+# Two-dimensional GLM-MHD
+
+The 2D solver stores cell averages on a uniform Cartesian mesh and applies the
+unsplit method-of-lines operator
+
+\[
+\mathcal L(\mathbf U)=-\frac{\widehat{\mathbf F}_{i+1/2,j}-
+\widehat{\mathbf F}_{i-1/2,j}}{\Delta x}
+-\frac{\widehat{\mathbf G}_{i,j+1/2}-
+\widehat{\mathbf G}_{i,j-1/2}}{\Delta y}.
+\]
+
+Primitive variables are independently reconstructed in x and y with minmod
+slopes. Directional HLL signal bounds include both the fast magnetosonic speed
+and the GLM cleaning speed. The multidimensional timestep is
+
+\[
+\Delta t=C_{CFL}\left(\frac{a_x}{\Delta x}+
+\frac{a_y}{\Delta y}\right)^{-1},
+\]
+
+where \(a_x\) and \(a_y\) are the maximum directional transport speeds including
+\(c_h\). SSP-RK2 advances the hyperbolic system. The exactly integrated damping
+source \(\psi\leftarrow\psi e^{-\kappa\Delta t}\) is Strang-split into half
+steps. Removed \(\psi\)-energy is also removed from augmented total energy, so
+damping does not spuriously heat the gas.
+
+The diagnostic \(\|\nabla\cdot\mathbf B\|_2\) uses centred differences. GLM is
+simple and compatible with cell-centred fields, but it controls rather than
+eliminates divergence. Constrained transport is intentionally deferred.

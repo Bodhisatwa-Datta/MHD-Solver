@@ -1,0 +1,28 @@
+{
+  "problem": "sinusoidal magnetic-divergence perturbation",
+  "configuration": {
+    "nx": 64,
+    "ny": 64,
+    "x_min": 0.0,
+    "x_max": 1.0,
+    "y_min": 0.0,
+    "y_max": 1.0,
+    "final_time": 1.0,
+    "gamma": 1.6666666666666667,
+    "cfl": 0.35,
+    "order": 2,
+    "boundary": "periodic",
+    "cleaning_speed": 2.0,
+    "cleaning_damping_rate": 2.0,
+    "max_steps": 1000000
+  },
+  "initial_divergence_L2": 0.004435749414370927,
+  "final_damped_divergence_L2": 0.0015918294129090005,
+  "final_undamped_divergence_L2": 0.004339415420838058,
+  "damped_reduction_factor": 2.7865733466155667,
+  "damped_total_energy_change": -2.1303716080112167e-07,
+  "minimum_density": 0.9999999949713063,
+  "minimum_pressure": 0.9999999942129716,
+  "damped_steps": 732,
+  "undamped_steps": 732
+}

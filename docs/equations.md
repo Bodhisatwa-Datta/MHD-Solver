@@ -97,3 +97,35 @@ v_A=\frac{B_x}{\sqrt{\rho_0}}.
 Because \(|\mathbf B_\perp|=A\) is constant, magnetic pressure is uniform. This
 circular polarization is an exact finite-amplitude ideal-MHD solution rather
 than a linearized wave.
+
+# Two-dimensional GLM-MHD
+
+The cell-centred 2D formulation augments ideal MHD with a generalized Lagrange
+multiplier \(\psi\). Its conserved state is
+
+\[
+\mathbf U=(\rho,\rho v_x,\rho v_y,\rho v_z,E,B_x,B_y,B_z,\psi)^T,
+\]
+
+where the augmented total energy is
+
+\[
+E=\frac{p}{\gamma-1}+\frac{1}{2}\rho|\mathbf v|^2+
+\frac{1}{2}|\mathbf B|^2+\frac{\psi^2}{2c_h^2}.
+\]
+
+The induction and cleaning subsystem is
+
+\[
+\frac{\partial\mathbf B}{\partial t}
++\nabla\cdot(\mathbf v\mathbf B-\mathbf B\mathbf v+\psi\mathbf I)=0,
+\]
+
+\[
+\frac{\partial\psi}{\partial t}+c_h^2\nabla\cdot\mathbf B=-\kappa\psi.
+\]
+
+Thus divergence errors propagate at speed \(c_h\) and decay through the damping
+rate \(\kappa\). The implementation is based on the hyperbolic/parabolic GLM
+idea of Dedner et al., *Journal of Computational Physics* 175 (2002), 645–673,
+[doi:10.1006/jcph.2001.6961](https://doi.org/10.1006/jcph.2001.6961).

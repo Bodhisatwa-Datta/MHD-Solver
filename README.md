@@ -4,7 +4,7 @@ A progressively developed finite-volume solver for compressible hydrodynamics an
 magnetohydrodynamics. This is a readable, reproducible computational-physics
 codebase rather than a production simulation package.
 
-## Current status: Phase 2, validated 1D ideal MHD
+## Current status: Phase 3, 2D GLM-MHD foundation
 
 The implemented model is the one-dimensional compressible Euler system
 
@@ -33,6 +33,12 @@ magnetosonic speed, an HLL MHD solver, the Brio-Wu shock tube, and exact
 Alfvén-wave convergence. The
 longitudinal field is constant in 1D, satisfying the divergence constraint in
 this restricted geometry.
+
+The first two-dimensional increment adds an unsplit Cartesian finite-volume
+solver, x/y HLL fluxes, multidimensional CFL control, two-dimensional boundary
+fills, and damped generalized-Lagrange-multiplier (GLM) divergence cleaning. A
+controlled divergence perturbation has been validated; Orszag–Tang and magnetic
+rotor runs remain pending.
 
 ## Installation
 
@@ -86,6 +92,17 @@ against the exact nonlinear solution, and writes
 `figures/alfven_wave_convergence.png` plus
 `benchmarks/convergence/alfven_wave_convergence.json`.
 
+Run the two-dimensional GLM divergence-cleaning validation with:
+
+```bash
+python scripts/run_divergence_cleaning.py
+```
+
+This compares damped and undamped evolution of a controlled sinusoidal
+\(\nabla\cdot\mathbf B\) perturbation and writes
+`figures/divergence_cleaning.png` and
+`benchmarks/convergence/divergence_cleaning.json`.
+
 ## Tests
 
 ```bash
@@ -108,6 +125,7 @@ evolution, smooth-wave convergence, and conservation.
 src/mhd_solver/common/     equation of state, reconstruction, HLL flux
 src/mhd_solver/hydro1d/    Euler solver, initial data, exact Sod solution
 src/mhd_solver/mhd1d/      ideal-MHD equations, solver, Brio-Wu and Alfvén data
+src/mhd_solver/mhd2d/      Cartesian GLM-MHD equations, solver, boundaries
 scripts/                   reproducible benchmark entry points
 tests/                     automated unit and integration tests
 docs/                      equations, method, and validation record
@@ -132,6 +150,6 @@ and [the validation record](docs/validation.md) for scientific details.
 
 1. Hydrodynamics baseline (validated)
 2. 1D ideal MHD: HLL, Brio-Wu, and Alfvén convergence (validated)
-3. 2D ideal MHD with divergence cleaning
+3. 2D ideal MHD: GLM foundation validated; Orszag–Tang and rotor pending
 4. Explicit resistive MHD validated against magnetic diffusion
 5. Harris-sheet reconnection experiments
