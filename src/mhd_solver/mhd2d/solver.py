@@ -41,6 +41,7 @@ class MHD2DConfig:
     resistivity: float = 0.0
     diffusion_cfl: float = 0.8
     max_steps: int = 1_000_000
+    output_times: tuple[float, ...] = ()
 
     def __post_init__(self) -> None:
         if self.nx < 4 or self.ny < 4 or self.x_max <= self.x_min or self.y_max <= self.y_min:
@@ -59,6 +60,13 @@ class MHD2DConfig:
             raise ValueError("cleaning speed must be positive and damping non-negative")
         if self.resistivity < 0.0 or not 0.0 < self.diffusion_cfl <= 1.0:
             raise ValueError("resistivity must be non-negative and 0 < diffusion_cfl <= 1")
+        if tuple(sorted(set(self.output_times))) != self.output_times:
+            raise ValueError("output_times must be unique and strictly increasing")
+        if any(
+            not np.isfinite(time) or time < 0.0 or time > self.final_time
+            for time in self.output_times
+        ):
+            raise ValueError("output_times must lie between zero and final_time")
 
     @property
     def resolved_boundary_x(self) -> Boundary:
@@ -81,6 +89,8 @@ class MHD2DResult:
     final_integrals: np.ndarray
     divergence_times: np.ndarray
     divergence_l2: np.ndarray
+    snapshot_times: np.ndarray
+    primitive_snapshots: np.ndarray
 
 
 def cell_centres(config: MHD2DConfig) -> tuple[np.ndarray, np.ndarray]:
@@ -232,15 +242,31 @@ def solve(
             )
         )
     ]
+    snapshot_times: list[float] = []
+    primitive_snapshots: list[np.ndarray] = []
+    next_output = 0
+    if config.output_times and config.output_times[0] == 0.0:
+        snapshot_times.append(0.0)
+        primitive_snapshots.append(primitive.copy())
+        next_output = 1
 
     for step in range(1, config.max_steps + 1):
         if time >= config.final_time:
+            snapshots = (
+                np.stack(primitive_snapshots)
+                if primitive_snapshots
+                else np.empty((0, *primitive.shape))
+            )
             return MHD2DResult(
                 x, y, conserved, primitive, time, step - 1,
                 initial_integrals, conserved_integrals(conserved, dx, dy),
                 np.asarray(divergence_times), np.asarray(divergence_l2),
+                np.asarray(snapshot_times), snapshots,
             )
-        dt = min(_stable_timestep(conserved, dx, dy, config), config.final_time - time)
+        target_time = config.final_time
+        if next_output < len(config.output_times):
+            target_time = min(target_time, config.output_times[next_output])
+        dt = min(_stable_timestep(conserved, dx, dy, config), target_time - time)
         conserved = _damp_cleaning_field(conserved, 0.5 * dt, config)
         first_stage = conserved + dt * _spatial_operator(conserved, dx, dy, config)
         conserved_to_primitive(first_stage, config.gamma, config.cleaning_speed)
@@ -253,6 +279,14 @@ def solve(
         conserved = _damp_cleaning_field(conserved, 0.5 * dt, config)
         primitive = conserved_to_primitive(conserved, config.gamma, config.cleaning_speed)
         time += dt
+        tolerance = 16.0 * np.finfo(float).eps * max(1.0, abs(time))
+        while (
+            next_output < len(config.output_times)
+            and time >= config.output_times[next_output] - tolerance
+        ):
+            snapshot_times.append(config.output_times[next_output])
+            primitive_snapshots.append(primitive.copy())
+            next_output += 1
         divergence_times.append(time)
         divergence_l2.append(
             float(

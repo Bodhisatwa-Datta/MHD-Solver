@@ -195,6 +195,32 @@ class MHD2DSolverTests(unittest.TestCase):
             )
             self.assertLess(result.divergence_l2[-1], 1.0e-13)
 
+    def test_requested_snapshots_are_returned_at_exact_times(self) -> None:
+        config = MHD2DConfig(
+            nx=8,
+            ny=8,
+            final_time=0.02,
+            output_times=(0.0, 0.007, 0.013, 0.02),
+            cleaning_damping_rate=0.0,
+        )
+        result = solve(config, self.uniform_state)
+        np.testing.assert_array_equal(result.snapshot_times, config.output_times)
+        self.assertEqual(result.primitive_snapshots.shape, (4, 9, 8, 8))
+        for snapshot in result.primitive_snapshots:
+            np.testing.assert_allclose(
+                snapshot,
+                self.uniform_state(result.x, result.y),
+                rtol=1.0e-13,
+                atol=1.0e-13,
+            )
+        np.testing.assert_allclose(result.primitive_snapshots[-1], result.primitive)
+
+    def test_snapshot_schedule_must_be_ordered_and_in_range(self) -> None:
+        with self.assertRaises(ValueError):
+            MHD2DConfig(final_time=0.1, output_times=(0.08, 0.04))
+        with self.assertRaises(ValueError):
+            MHD2DConfig(final_time=0.1, output_times=(0.05, 0.12))
+
     def test_glm_damping_reduces_controlled_divergence_error(self) -> None:
         base = dict(nx=16, ny=16, final_time=0.5, cleaning_speed=2.0)
         undamped = solve(

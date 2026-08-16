@@ -170,3 +170,17 @@ As a consistency check, the same mode is evolved with a known explicit
 resistivity. Subtracting that value from the total inferred decay should recover
 the independently measured zero-resistivity \(\eta_{num}\) if the two diffusion
 mechanisms are additive in this weak, smooth regime.
+
+## Exact-time diagnostic snapshots
+
+The 2D configuration may request a strictly increasing tuple of output times.
+The timestep is shortened when necessary to land exactly on each requested
+time, and a copy of the primitive state is stored. No temporal interpolation is
+used. Empty output schedules retain the original low-memory behavior.
+
+The reconnection sweep samples eleven states from \(t=0\) through \(t=1\).
+Reconnected flux, X-point electric field, kinetic and magnetic energies,
+primitive extrema, current, and divergence are evaluated from those synchronized
+states. A descriptive late-time flux slope is obtained by least-squares fitting
+\(\Psi_{rec}(t)\) over \(0.5\leq t\leq1\). It is a finite-window diagnostic, not
+automatically a steady reconnection rate.

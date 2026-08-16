@@ -51,7 +51,10 @@ and reconnection outflows. An ideal control exposes substantial numerical
 reconnection. A separate Fourier-mode study quantifies smooth-field numerical
 resistivity and confirms near-first-order scaling for piecewise-constant HLL and
 better-than-second-order decay for MUSCL–RK2. Sweet–Parker validation remains
-pending because limited current sheets are less smooth than that diagnostic.
+pending because limited current sheets are less smooth than that diagnostic. A
+time-resolved resistivity sweep has also been completed; it produces a trend
+opposite to Sweet–Parker in the present seeded, diffusion-dominated regime, so
+no physical scaling agreement is claimed.
 
 ## Installation
 
@@ -182,6 +185,18 @@ to within 0.5% across all tested resolutions.
 Results are saved in `benchmarks/convergence/numerical_resistivity.json` and
 `figures/numerical_resistivity.png`.
 
+Run the time-resolved Harris-sheet resistivity sweep with:
+
+```bash
+python scripts/run_reconnection_sweep.py
+```
+
+The default matrix uses 64² and 128² grids with `eta = 0`, `0.0005`, `0.001`,
+and `0.002`, recording eleven exact-time snapshots through `t=1`. It writes
+`benchmarks/convergence/reconnection_resistivity_sweep.json` and
+`figures/reconnection_resistivity_sweep.png`. Use `--plot-only` to regenerate
+the figure from the saved JSON without repeating the expensive integrations.
+
 ## Tests
 
 ```bash
@@ -234,5 +249,6 @@ and [the validation record](docs/validation.md) for scientific details.
 2. 1D ideal MHD: HLL, Brio-Wu, and Alfvén convergence (validated)
 3. 2D ideal MHD: GLM, Orszag–Tang, and magnetic rotor (validated)
 4. Uniform resistive MHD: magnetic diffusion validated
-5. Harris current sheet: equilibrium, seeded experiment, and smooth-mode
-   numerical-resistivity study validated; Sweet–Parker scaling pending
+5. Harris current sheet: equilibrium, seeded experiment, numerical-resistivity
+   study, and time-resolved resistivity sweep completed; a Sweet–Parker regime
+   has not yet been demonstrated

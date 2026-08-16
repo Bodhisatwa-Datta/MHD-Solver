@@ -437,3 +437,48 @@ remains required, and no Sweet–Parker scaling is inferred from the smooth-mode
 measurement alone. Data and the figure are stored in
 `benchmarks/convergence/numerical_resistivity.json` and
 `figures/numerical_resistivity.png`.
+
+## Time-resolved reconnection resistivity sweep
+
+The seeded Harris problem was run at 64² and 128² with \(\eta=0\),
+\(5\times10^{-4}\), \(10^{-3}\), and \(2\times10^{-3}\). Eleven exact-time
+snapshots cover \(0\leq t\leq1\). All cases use the same equilibrium,
+perturbation, HLL–MUSCL–RK2 method, CFL 0.3, mixed boundaries, and GLM settings
+as the single reconnection experiment.
+
+| Grid | \(\eta\) | Final flux change | Late-time slope | Final \(E_z(X)\) | Final kinetic energy |
+|---:|---:|---:|---:|---:|---:|
+| 64² | 0 | 5.16459e-3 | 1.52289e-2 | -1.39236e-3 | 2.58525e-4 |
+| 64² | 5e-4 | 3.91833e-3 | 1.34900e-2 | -7.62805e-3 | 2.10832e-4 |
+| 64² | 1e-3 | 2.74391e-3 | 1.19055e-2 | -1.29767e-2 | 1.74299e-4 |
+| 64² | 2e-3 | 7.41137e-4 | 9.37021e-3 | -2.15540e-2 | 1.28750e-4 |
+| 128² | 0 | 5.83979e-3 | 1.36425e-2 | -8.96475e-4 | 6.49392e-4 |
+| 128² | 5e-4 | 4.07053e-3 | 1.13040e-2 | -1.04800e-2 | 4.82546e-4 |
+| 128² | 1e-3 | 2.73726e-3 | 9.70584e-3 | -1.70845e-2 | 3.65667e-4 |
+| 128² | 2e-3 | 7.67806e-4 | 7.68602e-3 | -2.53937e-2 | 2.27072e-4 |
+
+Every flux history initially decreases as the imposed island relaxes, reaches a
+minimum near \(t=0.2\)–0.4, and then regrows. Increasing resistivity raises the
+magnitude of the local non-ideal electric field, but it also broadens the sheet,
+reduces the final island-flux increase, lowers the late-time flux slope, and
+reduces kinetic-energy production. Thus \(|E_z(X)|\) alone is not equivalent to
+the global O-to-X flux-growth rate in this transient problem.
+
+Final flux changes agree increasingly well under refinement as physical
+resistivity rises. The 128²-minus-64² differences are 6.75e-4 for the ideal
+control, 1.52e-4 at \(\eta=5\times10^{-4}\), -6.65e-6 at \(10^{-3}\), and
+2.67e-5 at \(2\times10^{-3}\). Detailed fields remain less converged: at
+\(\eta=10^{-3}\), coarse/fine density, pressure, \(B_x\), and \(B_y\) mean
+absolute differences are 0.0663, 0.0175, 0.0224, and 0.00514. Late-time slope
+differences remain about 14–18% for the positive-resistivity cases.
+
+A formal fit of the three positive-resistivity slopes gives exponents -0.263 at
+64² and -0.278 at 128². These similar negative values are opposite the
+Sweet–Parker expectation of +1/2. They describe suppression of the seeded island
+by diffusion in this finite-time setup, not a converged Sweet–Parker layer.
+Accordingly, the sweep is a useful negative result and no agreement with
+Sweet–Parker scaling is claimed. A future scaling study needs a sustained,
+quasi-steady inflow/outflow layer, longer domains or driven boundaries, and
+stronger control of current-sheet numerical diffusion. Full histories are in
+`benchmarks/convergence/reconnection_resistivity_sweep.json`; the six-panel
+summary is `figures/reconnection_resistivity_sweep.png`.
