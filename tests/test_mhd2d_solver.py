@@ -10,6 +10,11 @@ from mhd_solver.mhd2d.initial_conditions import (
 )
 from mhd_solver.mhd2d.solver import MHD2DConfig, magnetic_divergence, solve
 from mhd_solver.reconnection.initial_conditions import harris_current_sheet
+from mhd_solver.reconnection.diagnostics import (
+    reconnected_flux,
+    reconnection_electric_field,
+)
+from mhd_solver.reconnection.initial_conditions import perturbed_harris_sheet
 
 
 class MHD2DSolverTests(unittest.TestCase):
@@ -72,6 +77,52 @@ class MHD2DSolverTests(unittest.TestCase):
         self.assertGreater(result.primitive[4].min(), 0.0)
         self.assertLess(float(speed.max()), 0.02)
         self.assertLess(result.divergence_l2[-1], 1.0e-12)
+
+    def test_harris_perturbation_is_divergence_free_and_has_seed_flux(self) -> None:
+        config = MHD2DConfig(
+            nx=32,
+            ny=32,
+            y_min=-0.5,
+            y_max=0.5,
+            final_time=0.0,
+            boundary_x="periodic",
+            boundary_y="outflow",
+        )
+        dx = 1.0 / config.nx
+        dy = 1.0 / config.ny
+        x = (np.arange(config.nx) + 0.5) * dx
+        y = config.y_min + (np.arange(config.ny) + 0.5) * dy
+        primitive = perturbed_harris_sheet(x, y)
+        divergence = magnetic_divergence(primitive, dx, dy, "periodic", "outflow")
+        self.assertLess(float(np.sqrt(np.mean(divergence**2))), 1.0e-13)
+        self.assertAlmostEqual(reconnected_flux(primitive, x, y), 0.02, delta=8.0e-4)
+        self.assertAlmostEqual(
+            reconnection_electric_field(primitive, x, y, 0.0), 0.0, delta=1.0e-15
+        )
+        self.assertLess(reconnection_electric_field(primitive, x, y, 0.005), -0.05)
+
+    def test_perturbed_resistive_sheet_short_evolution_is_physical(self) -> None:
+        result = solve(
+            MHD2DConfig(
+                nx=16,
+                ny=32,
+                y_min=-0.5,
+                y_max=0.5,
+                final_time=0.01,
+                gamma=5.0 / 3.0,
+                cfl=0.3,
+                boundary_x="periodic",
+                boundary_y="outflow",
+                cleaning_speed=2.0,
+                cleaning_damping_rate=2.0,
+                resistivity=0.001,
+            ),
+            perturbed_harris_sheet,
+        )
+        self.assertGreater(result.primitive[0].min(), 0.0)
+        self.assertGreater(result.primitive[4].min(), 0.0)
+        self.assertTrue(np.all(np.isfinite(result.conserved)))
+        self.assertLess(result.divergence_l2[-1], 0.01)
 
     def test_magnetic_rotor_initial_state_and_divergence(self) -> None:
         config = MHD2DConfig(nx=32, ny=32, final_time=0.0, gamma=1.4, boundary="outflow")

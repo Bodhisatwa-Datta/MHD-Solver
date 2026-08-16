@@ -51,3 +51,58 @@ def harris_current_sheet(
             zeros,
         )
     )
+
+
+def perturbed_harris_sheet(
+    x: np.ndarray,
+    y: np.ndarray,
+    *,
+    magnetic_field: float = 1.0,
+    half_width: float = 0.05,
+    background_pressure: float = 0.2,
+    background_density: float = 1.0,
+    perturbation_amplitude: float = 0.01,
+    perturbation_width: float = 0.1,
+    x_point: float = 0.5,
+) -> np.ndarray:
+    r"""Return a Harris sheet with a divergence-free magnetic perturbation.
+
+    A localized out-of-plane vector potential
+    ``delta A_z = A_p cos[2 pi (x-x_X)/L_x] exp[-(y/w)^2]`` is sampled on
+    cell centres. Its discrete curl is evaluated with the same directional
+    derivatives as the divergence diagnostic, making the perturbation
+    divergence-free to roundoff. The default places an X-point at ``x=0.5``
+    and an O-point at the periodic x boundary.
+    """
+    if x.size < 4 or y.size < 4:
+        raise ValueError("perturbed sheet requires at least four cells per direction")
+    if not np.isfinite(perturbation_amplitude) or perturbation_amplitude == 0.0:
+        raise ValueError("perturbation amplitude must be finite and non-zero")
+    if not np.isfinite(x_point) or perturbation_width <= 0.0:
+        raise ValueError("x_point must be finite and perturbation width positive")
+    dx = float(x[1] - x[0])
+    dy = float(y[1] - y[0])
+    if not np.allclose(np.diff(x), dx) or not np.allclose(np.diff(y), dy):
+        raise ValueError("perturbed sheet requires a uniform Cartesian grid")
+
+    primitive = harris_current_sheet(
+        x,
+        y,
+        magnetic_field=magnetic_field,
+        half_width=half_width,
+        background_pressure=background_pressure,
+        background_density=background_density,
+    )
+    xx, yy = np.meshgrid(x, y)
+    domain_length_x = float(x[-1] - x[0] + dx)
+    vector_potential = perturbation_amplitude * np.cos(
+        2.0 * np.pi * (xx - x_point) / domain_length_x
+    ) * np.exp(-(yy / perturbation_width) ** 2)
+    perturbation_bx = np.gradient(vector_potential, dy, axis=0, edge_order=2)
+    perturbation_by = -(
+        np.roll(vector_potential, -1, axis=1)
+        - np.roll(vector_potential, 1, axis=1)
+    ) / (2.0 * dx)
+    primitive[5] += perturbation_bx
+    primitive[6] += perturbation_by
+    return primitive

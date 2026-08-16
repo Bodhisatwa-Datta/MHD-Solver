@@ -347,3 +347,48 @@ discrete pressure/magnetic-stress balance launches small y-directed motions.
 Those measured errors set the baseline that a future seeded resistive
 reconnection run must exceed. The figure and full record are
 `figures/harris_equilibrium.png` and `figures/harris_equilibrium.json`.
+
+## Seeded Harris-sheet reconnection
+
+A divergence-free perturbation with vector-potential amplitude 0.01 and
+vertical width 0.1 was applied to the validated sheet. The X-point is at
+\((0.5,0)\), while the magnetic island closes through the periodic x boundary.
+Runs used the equilibrium configuration above, \(\eta=10^{-3}\), and reached
+\(t=1\). The nominal Lundquist numbers are 50 based on sheet half-width 0.05
+and 500 based on sheet half-length 0.5. Each resistive calculation was paired
+with an otherwise identical ideal control.
+
+| Diagnostic | 64² resistive | 128² resistive |
+|---|---:|---:|
+| Initial reconnected flux | 1.98544e-2 | 1.99635e-2 |
+| Final reconnected flux | 2.25983e-2 | 2.27008e-2 |
+| Flux increase | 2.74391e-3 | 2.73726e-3 |
+| Final \(E_z(X)\) | -1.29767e-2 | -1.70845e-2 |
+| Final kinetic energy | 1.74299e-4 | 3.65667e-4 |
+| Final magnetic energy | 4.07101e-1 | 4.24546e-1 |
+| Maximum speed | 4.21745e-2 | 7.77314e-2 |
+| Maximum \(|J_z|\) | 12.0737 | 16.7286 |
+| Dimensionless divergence | 1.61114e-4 | 1.18009e-4 |
+
+The flux increase agrees to 0.24% between the two grids. The 128² field-line
+plot shows the seeded O-point, a central X-point, inflow toward the sheet, and
+oppositely directed outflow jets. Magnetic energy falls from 0.450435 to
+0.424546 while kinetic energy grows from zero. The remaining energy is mainly
+redistributed into internal energy, with additional exchange through the open
+y boundaries. At 128², mass and total energy change by 0.00526 and 0.00785;
+these are boundary-flux balances, not closed-domain conservation errors.
+
+Detailed structures are not grid-converged: the restricted 128² and 64²
+resistive states differ in density, pressure, \(B_x\), and \(B_y\) by mean
+absolute values 0.0663, 0.0175, 0.0224, and 0.00514. The local X-point electric
+field also remains resolution-sensitive.
+
+The ideal controls are decisive. Their flux increases are 0.00516 and 0.00584
+at 64² and 128², larger than the explicit-resistive increases. Thus the run
+demonstrates topology change and exercises the reconnection diagnostics, but
+does not isolate a reconnection rate controlled solely by physical resistivity.
+No Sweet–Parker scaling is claimed. Establishing such scaling requires a
+numerical-resistivity study, additional resolutions and resistivities, and
+likely a less diffusive Riemann solver or constrained transport. Full results
+are stored in `figures/harris_reconnection.json` and
+`figures/harris_reconnection.png`.

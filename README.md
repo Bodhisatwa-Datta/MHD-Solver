@@ -4,7 +4,7 @@ A progressively developed finite-volume solver for compressible hydrodynamics an
 magnetohydrodynamics. This is a readable, reproducible computational-physics
 codebase rather than a production simulation package.
 
-## Current status: Phase 5, validated Harris-sheet equilibrium
+## Current status: Phase 5, seeded Harris-sheet reconnection
 
 The implemented model is the one-dimensional compressible Euler system
 
@@ -46,7 +46,9 @@ equations and has passed a second-order sinusoidal magnetic-diffusion convergenc
 test. The first reconnection-phase increment adds independent x/y boundaries
 and a constant-temperature, total-pressure-balanced Harris current sheet. Its
 unperturbed ideal evolution has been checked at 64² and 128². A seeded,
-resistive reconnection experiment remains pending.
+resistive experiment now produces an X-point, magnetic island, current layer,
+and reconnection outflows. An ideal control exposes substantial numerical
+reconnection, so resistivity scaling and Sweet–Parker validation remain pending.
 
 ## Installation
 
@@ -151,6 +153,18 @@ across it, compares 64² and 128² grids through `t=0.1`, and records numerical
 drift before any reconnection perturbation is introduced. It writes
 `figures/harris_equilibrium.png` and `figures/harris_equilibrium.json`.
 
+Run the seeded resistive experiment and its ideal control with:
+
+```bash
+python scripts/run_reconnection.py
+```
+
+The default calculation compares 64² and 128² grids through `t=1` at
+`eta=0.001`, measures reconnected flux and X-point electric field, and saves
+`figures/harris_reconnection.png` plus its JSON record. The ideal control is
+mandatory because HLL contributes significant numerical resistivity at these
+resolutions.
+
 ## Tests
 
 ```bash
@@ -203,5 +217,5 @@ and [the validation record](docs/validation.md) for scientific details.
 2. 1D ideal MHD: HLL, Brio-Wu, and Alfvén convergence (validated)
 3. 2D ideal MHD: GLM, Orszag–Tang, and magnetic rotor (validated)
 4. Uniform resistive MHD: magnetic diffusion validated
-5. Harris current sheet: unperturbed equilibrium validated; seeded resistive
-   reconnection pending
+5. Harris current sheet: equilibrium and first seeded experiment validated;
+   numerical-resistivity study and Sweet–Parker scaling pending

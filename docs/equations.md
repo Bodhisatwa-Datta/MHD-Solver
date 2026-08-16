@@ -185,3 +185,35 @@ the GLM field \(\psi\) are initially zero. The corresponding current is
 \(J_z=-\partial_y B_x\). The present validation sets \(\eta=0\) and applies no
 perturbation; finite resistivity would diffuse the sheet, so it would no longer
 be stationary.
+
+## Seed perturbation and reconnection diagnostics
+
+The seeded experiment adds the discrete curl of a localized vector potential,
+
+\[
+\delta A_z=A_p\cos\left[\frac{2\pi(x-x_X)}{L_x}\right]
+\exp[-(y/w)^2],
+\qquad
+(\delta B_x,\delta B_y)=(\partial_y\delta A_z,-\partial_x\delta A_z).
+\]
+
+The two discrete derivative operators commute, so the sampled perturbation is
+divergence-free to roundoff. The default \(A_p=0.01\), \(w=0.1\), and
+\(x_X=0.5\) place the X-point at the domain centre and the O-point at the
+periodic x boundary.
+
+Reconnected flux is measured along the sheet midplane using
+
+\[
+\Psi_{rec}=\left|\int_{x_O}^{x_X}B_y(x,0)\,dx\right|
+=|A_z(X)-A_z(O)|.
+\]
+
+The local non-ideal electric-field diagnostic is
+
+\[
+E_z(X)=-[\mathbf v\times\mathbf B]_z+\eta J_z.
+\]
+
+Because the HLL flux also introduces numerical resistivity, every explicit-
+resistivity result is compared with an otherwise identical \(\eta=0\) control.

@@ -1,0 +1,209 @@
+{
+  "problem": "seeded Harris-sheet reconnection with ideal control",
+  "configuration_at_finest_resolution": {
+    "nx": 128,
+    "ny": 128,
+    "x_min": 0.0,
+    "x_max": 1.0,
+    "y_min": -0.5,
+    "y_max": 0.5,
+    "final_time": 1.0,
+    "gamma": 1.6666666666666667,
+    "cfl": 0.3,
+    "order": 2,
+    "boundary": "periodic",
+    "boundary_x": "periodic",
+    "boundary_y": "outflow",
+    "cleaning_speed": 2.0,
+    "cleaning_damping_rate": 2.0,
+    "resistivity": 0.001,
+    "diffusion_cfl": 0.8,
+    "max_steps": 1000000
+  },
+  "equilibrium": {
+    "magnetic_field": 1.0,
+    "sheet_half_width": 0.05,
+    "background_pressure": 0.2,
+    "background_density": 1.0,
+    "upstream_alfven_speed": 1.0
+  },
+  "perturbation": {
+    "vector_potential_amplitude": 0.01,
+    "vertical_width": 0.1,
+    "x_point": [
+      0.5,
+      0.0
+    ],
+    "o_point": [
+      0.0,
+      0.0
+    ]
+  },
+  "nominal_lundquist_numbers": {
+    "definition": "S = length * upstream_alfven_speed / resistivity",
+    "based_on_sheet_half_width": 50.0,
+    "based_on_sheet_half_length": 500.0
+  },
+  "runs": [
+    {
+      "resolution": 64,
+      "ideal_control": {
+        "resistivity": 0.0,
+        "steps": 871,
+        "initial_reconnected_flux": 0.01985435717509759,
+        "final_reconnected_flux": 0.02501894967104646,
+        "flux_change": 0.005164592495948871,
+        "average_flux_change_rate": 0.005164592495948871,
+        "final_x_point_electric_field": -0.0013923637871683463,
+        "initial_kinetic_energy": 0.0,
+        "final_kinetic_energy": 0.0002585250901070188,
+        "initial_magnetic_energy": 0.4504291023634225,
+        "final_magnetic_energy": 0.4146769826569614,
+        "maximum_speed": 0.05787486335005767,
+        "maximum_absolute_current_density": 14.043855306444812,
+        "density_range": [
+          0.982804125573578,
+          2.7685982607855544
+        ],
+        "pressure_range": [
+          0.19434911583729106,
+          0.8365039324223804
+        ],
+        "final_divergence_L2": 0.01016730401776617,
+        "dimensionless_divergence": 0.0001744439343738175,
+        "integral_changes": [
+          0.007026809302388415,
+          1.4293680984916318e-20,
+          0.0,
+          0.0,
+          0.010488667003009544,
+          -1.1102230246251565e-16,
+          -1.2727381592447664e-21,
+          0.0,
+          -1.9918509150276906e-21
+        ]
+      },
+      "resistive": {
+        "resistivity": 0.001,
+        "steps": 868,
+        "initial_reconnected_flux": 0.01985435717509759,
+        "final_reconnected_flux": 0.022598270221277365,
+        "flux_change": 0.002743913046179776,
+        "average_flux_change_rate": 0.002743913046179776,
+        "final_x_point_electric_field": -0.01297665931676771,
+        "initial_kinetic_energy": 0.0,
+        "final_kinetic_energy": 0.0001742986928931479,
+        "initial_magnetic_energy": 0.4504291023634225,
+        "final_magnetic_energy": 0.4071007289916125,
+        "maximum_speed": 0.04217454958176229,
+        "maximum_absolute_current_density": 12.073672568734771,
+        "density_range": [
+          0.9816580590488146,
+          2.6160374109852986
+        ],
+        "pressure_range": [
+          0.19436101916611975,
+          0.8171928541379873
+        ],
+        "final_divergence_L2": 0.009304207986335522,
+        "dimensionless_divergence": 0.0001611140809202405,
+        "integral_changes": [
+          0.008621336218650466,
+          -1.0238378401038347e-18,
+          2.0383000842727483e-17,
+          0.0,
+          0.012875354834121389,
+          -5.551115123125783e-17,
+          -7.438029955460458e-19,
+          0.0,
+          1.0423931556046242e-18
+        ]
+      },
+      "resistive_excess_final_flux": -0.0024206794497690955
+    },
+    {
+      "resolution": 128,
+      "ideal_control": {
+        "resistivity": 0.0,
+        "steps": 1753,
+        "initial_reconnected_flux": 0.0199634912513407,
+        "final_reconnected_flux": 0.02580328508814849,
+        "flux_change": 0.005839793836807789,
+        "average_flux_change_rate": 0.005839793836807789,
+        "final_x_point_electric_field": -0.0008964746632788444,
+        "initial_kinetic_energy": 0.0,
+        "final_kinetic_energy": 0.0006493915722930413,
+        "initial_magnetic_energy": 0.45043502191871265,
+        "final_magnetic_energy": 0.435741881607118,
+        "maximum_speed": 0.11421585311480806,
+        "maximum_absolute_current_density": 23.85109696734818,
+        "density_range": [
+          0.9821363758813831,
+          3.4772296840768737
+        ],
+        "pressure_range": [
+          0.19411383140548918,
+          0.9142433929195155
+        ],
+        "final_divergence_L2": 0.015266591867743876,
+        "dimensionless_divergence": 0.00012776222772273839,
+        "integral_changes": [
+          0.0030775808695837625,
+          3.155197728522269e-20,
+          0.0,
+          0.0,
+          0.004585450338725483,
+          0.0,
+          -2.1582280911523876e-19,
+          0.0,
+          0.0
+        ]
+      },
+      "resistive": {
+        "resistivity": 0.001,
+        "steps": 1746,
+        "initial_reconnected_flux": 0.0199634912513407,
+        "final_reconnected_flux": 0.022700755968307323,
+        "flux_change": 0.002737264716966621,
+        "average_flux_change_rate": 0.002737264716966621,
+        "final_x_point_electric_field": -0.01708447736974908,
+        "initial_kinetic_energy": 0.0,
+        "final_kinetic_energy": 0.00036566675913602656,
+        "initial_magnetic_energy": 0.45043502191871265,
+        "final_magnetic_energy": 0.42454582601129764,
+        "maximum_speed": 0.07773143070252533,
+        "maximum_absolute_current_density": 16.728641973351117,
+        "density_range": [
+          0.9794441624067799,
+          3.1110447186975585
+        ],
+        "pressure_range": [
+          0.1939634466612272,
+          0.866801358588763
+        ],
+        "final_divergence_L2": 0.013918785138239895,
+        "dimensionless_divergence": 0.00011800871343405097,
+        "integral_changes": [
+          0.005255203722538848,
+          -2.653506069563957e-18,
+          4.2500725161431774e-17,
+          0.0,
+          0.007851770258293866,
+          0.0,
+          -1.5276055291712326e-18,
+          0.0,
+          -2.2807689729705184e-18
+        ]
+      },
+      "resistive_excess_final_flux": -0.003102529119841168
+    }
+  ],
+  "resistive_resolution_sensitivity": {
+    "coarse_resolution": 64,
+    "fine_resolution": 128,
+    "density_L1_difference": 0.06628317394189517,
+    "pressure_L1_difference": 0.01747398603988902,
+    "field_x_L1_difference": 0.022393794540970707,
+    "field_y_L1_difference": 0.005142662414698215
+  }
+}
