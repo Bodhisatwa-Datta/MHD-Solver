@@ -1,5 +1,5 @@
 import numpy as np
-import pytest
+import unittest
 
 from mhd_solver.common.eos import (
     UnphysicalStateError,
@@ -16,7 +16,7 @@ def test_primitive_conserved_round_trip() -> None:
 
 
 def test_negative_pressure_is_rejected() -> None:
-    with pytest.raises(UnphysicalStateError, match="pressure"):
+    with unittest.TestCase().assertRaisesRegex(UnphysicalStateError, "pressure"):
         primitive_to_conserved(np.array([1.0, 0.0, -1.0]), 1.4)
 
 
@@ -24,4 +24,3 @@ def test_stationary_uniform_flux() -> None:
     state = np.array([1.0, 0.0, 1.0])
     np.testing.assert_allclose(euler_flux(state, 1.4), [0.0, 1.0, 0.0])
     np.testing.assert_allclose(hll_flux(state, state, 1.4), euler_flux(state, 1.4))
-
