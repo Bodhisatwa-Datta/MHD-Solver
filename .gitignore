@@ -209,6 +209,9 @@ tempCodeRunnerFile.py
 # PyPI configuration file
 .pypirc
 
+# Local Matplotlib font/cache data
+.mplconfig/
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
