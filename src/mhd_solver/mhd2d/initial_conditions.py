@@ -50,3 +50,42 @@ def orszag_tang_vortex(x: np.ndarray, y: np.ndarray) -> np.ndarray:
             zeros,
         )
     )
+
+
+def magnetic_rotor(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Return the standard fast magnetic-rotor initial condition.
+
+    A dense rotor of radius 0.1 spins with angular velocity 20. Density and
+    velocity taper linearly to the ambient state between radii 0.1 and 0.115.
+    The corresponding configuration uses ``gamma=1.4`` and outflow boundaries.
+    """
+    xx, yy = np.meshgrid(x, y)
+    delta_x, delta_y = xx - 0.5, yy - 0.5
+    radius = np.sqrt(delta_x**2 + delta_y**2)
+    inner_radius, outer_radius = 0.1, 0.115
+    taper = np.where(
+        radius <= inner_radius,
+        1.0,
+        np.where(
+            radius < outer_radius,
+            (outer_radius - radius) / (outer_radius - inner_radius),
+            0.0,
+        ),
+    )
+    density = 1.0 + 9.0 * taper
+    velocity_x = -20.0 * taper * delta_y
+    velocity_y = 20.0 * taper * delta_x
+    zeros = np.zeros_like(xx)
+    return np.stack(
+        (
+            density,
+            velocity_x,
+            velocity_y,
+            zeros,
+            np.ones_like(xx),
+            np.full_like(xx, 5.0 / np.sqrt(4.0 * np.pi)),
+            zeros,
+            zeros,
+            zeros,
+        )
+    )

@@ -227,3 +227,56 @@ are not grid-converged. The result is therefore a qualitative nonlinear
 validation and resolution-sensitivity study, not a converged reference
 solution. Full diagnostics and the six-panel figure are stored in
 `figures/orszag_tang.json` and `figures/orszag_tang.png`.
+
+## Fast magnetic rotor
+
+The Balsara–Spicer rotor tests the propagation of strong torsional Alfvén waves
+from a rapidly spinning dense core. The setup follows the standard benchmark
+introduced by Balsara and Spicer, *Journal of Computational Physics* 149 (1999),
+270–292, [doi:10.1006/jcph.1998.6153](https://doi.org/10.1006/jcph.1998.6153).
+
+On \([0,1]^2\), the rotor is centred at \((0.5,0.5)\), with inner and outer
+radii \(r_0=0.1\) and \(r_1=0.115\). Inside the rotor, \(\rho=10\) and angular
+velocity is 20; density and velocity taper linearly to the ambient stationary
+state with \(\rho=1\). Pressure is one everywhere, \(B_x=5/\sqrt{4\pi}\),
+\(B_y=B_z=0\), and \(\gamma=1.4\). The field is initially divergence-free.
+
+The committed calculation used HLL, MUSCL-minmod, SSP-RK2, outflow boundaries,
+CFL 0.25, \(c_h=4\), and \(\kappa=4\). At \(t=0.15\), the 128² run measured:
+
+| Diagnostic | Measured value |
+|---|---:|
+| Density range | 0.90416–5.47109 |
+| Pressure range | 0.03706–1.79325 |
+| Maximum velocity magnitude | 0.89534 |
+| Maximum magnetic pressure | 2.11482 |
+| Maximum \(|J_z|\) | 51.8341 |
+| Final kinetic energy | 0.111291 |
+| Final magnetic energy | 1.104737 |
+| Final \(\|\nabla\cdot\mathbf B\|_2\) | 0.0818575 |
+| \(\Delta x\|\nabla\cdot B\|_2/B_{rms}\) | 4.30233e-4 |
+
+The initially horizontal field is wound around the rotor and launches outward
+torsional structures. Density forms an elongated core and current concentrates
+along the twisted-field fronts, qualitatively matching the standard benchmark.
+Density and pressure remain positive.
+
+Because the benchmark uses outflow boundaries and GLM waves reach those
+boundaries, changes in global integrals include physical/numerical boundary
+fluxes: mass changed by \(-4.35\times10^{-6}\) and total energy by
+\(3.56\times10^{-5}\). They are not interpreted as closed-domain conservation
+errors.
+
+The 64² result was compared with the restricted 128² solution:
+
+| Quantity | Coarse/fine \(L_1\) difference |
+|---|---:|
+| Density | 1.13636e-1 |
+| Pressure | 4.63368e-2 |
+| \(B_x\) | 3.28108e-2 |
+| \(B_y\) | 2.64766e-2 |
+
+The large-scale morphology agrees, but the density difference confirms that the
+rotor edge and torsional fronts are not grid-converged. This is a qualitative
+benchmark and resolution-sensitivity result. Full diagnostics and the generated
+figure are `figures/magnetic_rotor.json` and `figures/magnetic_rotor.png`.

@@ -2,11 +2,43 @@ import unittest
 
 import numpy as np
 
-from mhd_solver.mhd2d.initial_conditions import divergence_perturbation, orszag_tang_vortex
+from mhd_solver.mhd2d.initial_conditions import (
+    divergence_perturbation,
+    magnetic_rotor,
+    orszag_tang_vortex,
+)
 from mhd_solver.mhd2d.solver import MHD2DConfig, magnetic_divergence, solve
 
 
 class MHD2DSolverTests(unittest.TestCase):
+    def test_magnetic_rotor_initial_state_and_divergence(self) -> None:
+        config = MHD2DConfig(nx=32, ny=32, final_time=0.0, gamma=1.4, boundary="outflow")
+        dx, dy = 1.0 / config.nx, 1.0 / config.ny
+        x, y = (np.arange(config.nx) + 0.5) * dx, (np.arange(config.ny) + 0.5) * dy
+        primitive = magnetic_rotor(x, y)
+        self.assertGreater(primitive[0].max(), 9.0)
+        self.assertAlmostEqual(float(primitive[0].min()), 1.0)
+        divergence = magnetic_divergence(primitive, dx, dy, "outflow")
+        self.assertLess(float(np.sqrt(np.mean(divergence**2))), 1.0e-13)
+
+    def test_magnetic_rotor_short_evolution_remains_physical(self) -> None:
+        result = solve(
+            MHD2DConfig(
+                nx=16,
+                ny=16,
+                final_time=0.03,
+                gamma=1.4,
+                cfl=0.25,
+                boundary="outflow",
+                cleaning_speed=4.0,
+                cleaning_damping_rate=4.0,
+            ),
+            magnetic_rotor,
+        )
+        self.assertGreater(result.primitive[0].min(), 0.0)
+        self.assertGreater(result.primitive[4].min(), 0.0)
+        self.assertTrue(np.all(np.isfinite(result.conserved)))
+
     def test_orszag_tang_initial_field_is_discretely_divergence_free(self) -> None:
         config = MHD2DConfig(nx=32, ny=32, final_time=0.0)
         dx = (config.x_max - config.x_min) / config.nx

@@ -1,0 +1,83 @@
+{
+  "problem": "fast magnetic rotor",
+  "primary_configuration": {
+    "nx": 64,
+    "ny": 64,
+    "x_min": 0.0,
+    "x_max": 1.0,
+    "y_min": 0.0,
+    "y_max": 1.0,
+    "final_time": 0.15,
+    "gamma": 1.4,
+    "cfl": 0.25,
+    "order": 2,
+    "boundary": "outflow",
+    "cleaning_speed": 4.0,
+    "cleaning_damping_rate": 4.0,
+    "max_steps": 1000000
+  },
+  "comparison_configuration": {
+    "nx": 128,
+    "ny": 128,
+    "x_min": 0.0,
+    "x_max": 1.0,
+    "y_min": 0.0,
+    "y_max": 1.0,
+    "final_time": 0.15,
+    "gamma": 1.4,
+    "cfl": 0.25,
+    "order": 2,
+    "boundary": "outflow",
+    "cleaning_speed": 4.0,
+    "cleaning_damping_rate": 4.0,
+    "max_steps": 1000000
+  },
+  "primary_steps": 388,
+  "comparison_steps": 793,
+  "primitive_extrema_at_comparison_resolution": {
+    "density": [
+      0.9041583861951947,
+      5.471093066051296
+    ],
+    "pressure": [
+      0.0370568506180293,
+      1.7932487103119878
+    ],
+    "velocity_magnitude": [
+      7.739565701789384e-07,
+      0.8953396071388178
+    ],
+    "magnetic_pressure": [
+      0.09665454450136934,
+      2.1148221100536833
+    ],
+    "current_magnitude": [
+      9.360610187924417e-08,
+      51.834080300167905
+    ]
+  },
+  "final_kinetic_energy": 0.11129066865900356,
+  "final_magnetic_energy": 1.1047369945228072,
+  "integral_changes_with_outflow_boundaries": [
+    -4.352966431753202e-06,
+    -6.938893903907228e-18,
+    -3.2526065174565133e-19,
+    0.0,
+    3.5581686860020056e-05,
+    3.662810856952525e-05,
+    -5.2753892096382695e-05,
+    0.0,
+    0.0
+  ],
+  "divergence": {
+    "final_L2": 0.08185752405868317,
+    "maximum_L2": 0.14404036399989503,
+    "dimensionless_dx_L2_over_B_rms": 0.0004302334649218399
+  },
+  "coarse_vs_restricted_fine_L1": {
+    "density": 0.11363639162570333,
+    "pressure": 0.046336797476245785,
+    "field_x": 0.03281075872280021,
+    "field_y": 0.026476578223827138
+  }
+}
