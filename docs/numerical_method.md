@@ -144,3 +144,29 @@ with \(C_\eta=0.8\) by default. This restriction becomes expensive at high
 resolution because \(\Delta t_\eta\propto\Delta x^2\); super-time-stepping or an
 implicit method may be justified later, but is deliberately not introduced
 before the explicit implementation is validated.
+
+## Effective numerical resistivity
+
+Numerical magnetic diffusion is measured by evolving the weak mode
+\(B_y=A_0\sin(kx)\) with explicit \(\eta=0\). Its final amplitude is obtained
+from the discrete Fourier projection
+
+\[
+A(t)=2\langle B_y(x,t)\sin(kx)\rangle.
+\]
+
+An effective resistivity is then defined from the analytical diffusion law,
+
+\[
+\eta_{num}=-\frac{\ln[A(t)/A_0]}{k^2t}.
+\]
+
+The amplitude \(A_0=10^{-3}\) makes Lorentz-force feedback quadratic and
+negligible: measured maximum velocities remain below \(3\times10^{-8}\). This
+diagnostic characterizes smooth-mode damping for a chosen grid, CFL number, and
+scheme. It is not a universal material coefficient and can underestimate
+dissipation where the minmod limiter reduces the reconstruction to first order.
+As a consistency check, the same mode is evolved with a known explicit
+resistivity. Subtracting that value from the total inferred decay should recover
+the independently measured zero-resistivity \(\eta_{num}\) if the two diffusion
+mechanisms are additive in this weak, smooth regime.

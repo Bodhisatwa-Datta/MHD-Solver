@@ -392,3 +392,48 @@ numerical-resistivity study, additional resolutions and resistivities, and
 likely a less diffusive Riemann solver or constrained transport. Full results
 are stored in `figures/harris_reconnection.json` and
 `figures/harris_reconnection.png`.
+
+## Effective numerical resistivity
+
+The weak sinusoidal magnetic mode used in the diffusion test was evolved to
+\(t=0.2\) with explicit \(\eta=0\), periodic boundaries, CFL 0.3, and cleaning
+speed 2. Its retained Fourier amplitude was converted to \(\eta_{num}\) using
+the analytical exponential-decay law. Both first-order HLL and MUSCL–RK2 were
+measured on square grids.
+
+| Cells | First-order \(\eta_{num}\) | Scaling order | MUSCL–RK2 \(\eta_{num}\) | Scaling order |
+|---:|---:|---:|---:|---:|
+| 16 | 6.20540e-2 | — | 1.30265e-2 | — |
+| 32 | 3.11946e-2 | 0.992 | 2.59014e-3 | 2.330 |
+| 64 | 1.56181e-2 | 0.998 | 5.61797e-4 | 2.205 |
+| 128 | 7.81165e-3 | 1.000 | 1.30439e-4 | 2.107 |
+
+A fit over all resolutions gives \(\eta_{num}\propto\Delta x^{0.997}\) for
+first order and \(\Delta x^{2.21}\) for MUSCL–RK2. The first-order behavior is
+the expected HLL diffusion scaling. At 64² and 128², the production scheme's
+smooth-mode values are respectively 56.2% and 13.0% of the explicit
+reconnection resistivity \(10^{-3}\). Mode retention at 128² is 0.998971 for
+MUSCL–RK2 but only 0.940185 for first order.
+
+Maximum induced velocities remain below \(2.8\times10^{-8}\), confirming that
+Lorentz-force feedback is negligible, and total energy is conserved to
+\(4.44\times10^{-16}\). The result quantitatively supports using the
+second-order method for resistive experiments.
+
+The MUSCL–RK2 calculations were repeated with explicit \(\eta=10^{-3}\). The
+inferred total resistivities at 16², 32², 64², and 128² were 0.0139690,
+0.00358179, 0.00155900, and 0.00112981. After subtracting the explicit value,
+the residuals equal 99.56%, 99.68%, 99.50%, and 99.51% of the independently
+measured zero-\(\eta\) numerical resistivities. Thus physical and numerical
+modal diffusion are additive to within 0.5% in this controlled regime. At 128²,
+the measured total cleanly decomposes into \(10^{-3}\) explicit plus
+\(1.29806\times10^{-4}\) numerical resistivity.
+
+This smooth-wave estimate does not contradict the ideal Harris control, which
+still reconnects strongly. Near a thin current sheet, minmod activates and the
+scheme becomes locally first order; nonlinear topology change also cannot be
+represented by one scalar diffusion coefficient. Therefore the ideal control
+remains required, and no Sweet–Parker scaling is inferred from the smooth-mode
+measurement alone. Data and the figure are stored in
+`benchmarks/convergence/numerical_resistivity.json` and
+`figures/numerical_resistivity.png`.

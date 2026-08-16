@@ -48,7 +48,10 @@ and a constant-temperature, total-pressure-balanced Harris current sheet. Its
 unperturbed ideal evolution has been checked at 64² and 128². A seeded,
 resistive experiment now produces an X-point, magnetic island, current layer,
 and reconnection outflows. An ideal control exposes substantial numerical
-reconnection, so resistivity scaling and Sweet–Parker validation remain pending.
+reconnection. A separate Fourier-mode study quantifies smooth-field numerical
+resistivity and confirms near-first-order scaling for piecewise-constant HLL and
+better-than-second-order decay for MUSCL–RK2. Sweet–Parker validation remains
+pending because limited current sheets are less smooth than that diagnostic.
 
 ## Installation
 
@@ -165,6 +168,20 @@ The default calculation compares 64² and 128² grids through `t=1` at
 mandatory because HLL contributes significant numerical resistivity at these
 resolutions.
 
+Measure effective numerical resistivity with:
+
+```bash
+python scripts/run_numerical_resistivity.py
+```
+
+This evolves a weak Fourier magnetic mode with explicit `eta=0` at 16²–128².
+Modal decay is converted to an effective numerical resistivity for first-order
+HLL and MUSCL–RK2, with the reconnection value `eta=0.001` shown for reference.
+An explicit-reference run verifies that physical and numerical decay rates add
+to within 0.5% across all tested resolutions.
+Results are saved in `benchmarks/convergence/numerical_resistivity.json` and
+`figures/numerical_resistivity.png`.
+
 ## Tests
 
 ```bash
@@ -217,5 +234,5 @@ and [the validation record](docs/validation.md) for scientific details.
 2. 1D ideal MHD: HLL, Brio-Wu, and Alfvén convergence (validated)
 3. 2D ideal MHD: GLM, Orszag–Tang, and magnetic rotor (validated)
 4. Uniform resistive MHD: magnetic diffusion validated
-5. Harris current sheet: equilibrium and first seeded experiment validated;
-   numerical-resistivity study and Sweet–Parker scaling pending
+5. Harris current sheet: equilibrium, seeded experiment, and smooth-mode
+   numerical-resistivity study validated; Sweet–Parker scaling pending

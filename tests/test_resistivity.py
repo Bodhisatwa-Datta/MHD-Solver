@@ -3,11 +3,29 @@ import unittest
 import numpy as np
 
 from mhd_solver.mhd2d.solver import MHD2DConfig, solve
+from mhd_solver.resistive.diagnostics import (
+    effective_resistivity,
+    sinusoidal_mode_amplitude,
+)
 from mhd_solver.resistive.initial_conditions import magnetic_diffusion_wave
 from mhd_solver.resistive.resistivity import resistive_rhs
 
 
 class ResistivityTests(unittest.TestCase):
+    def test_fourier_decay_recovers_prescribed_resistivity(self) -> None:
+        cells = 64
+        x = (np.arange(cells) + 0.5) / cells
+        y = (np.arange(8) + 0.5) / 8
+        initial = magnetic_diffusion_wave(x, y, resistivity=0.037)
+        final = magnetic_diffusion_wave(x, y, time=0.4, resistivity=0.037)
+        initial_amplitude = sinusoidal_mode_amplitude(initial[6], x)
+        final_amplitude = sinusoidal_mode_amplitude(final[6], x)
+        self.assertAlmostEqual(
+            effective_resistivity(initial_amplitude, final_amplitude, 0.4),
+            0.037,
+            places=13,
+        )
+
     def test_sinusoidal_diffusion_operator_is_second_order(self) -> None:
         errors = []
         for cells in (32, 64):
