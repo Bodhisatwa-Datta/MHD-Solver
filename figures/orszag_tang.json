@@ -1,0 +1,83 @@
+{
+  "problem": "Orszag-Tang vortex",
+  "primary_configuration": {
+    "nx": 64,
+    "ny": 64,
+    "x_min": 0.0,
+    "x_max": 1.0,
+    "y_min": 0.0,
+    "y_max": 1.0,
+    "final_time": 0.5,
+    "gamma": 1.6666666666666667,
+    "cfl": 0.3,
+    "order": 2,
+    "boundary": "periodic",
+    "cleaning_speed": 2.0,
+    "cleaning_damping_rate": 2.0,
+    "max_steps": 1000000
+  },
+  "comparison_configuration": {
+    "nx": 128,
+    "ny": 128,
+    "x_min": 0.0,
+    "x_max": 1.0,
+    "y_min": 0.0,
+    "y_max": 1.0,
+    "final_time": 0.5,
+    "gamma": 1.6666666666666667,
+    "cfl": 0.3,
+    "order": 2,
+    "boundary": "periodic",
+    "cleaning_speed": 2.0,
+    "cleaning_damping_rate": 2.0,
+    "max_steps": 1000000
+  },
+  "primary_steps": 670,
+  "comparison_steps": 1357,
+  "primitive_extrema_at_comparison_resolution": {
+    "density": [
+      0.1043612302450547,
+      0.4182412876217385
+    ],
+    "pressure": [
+      0.039993769132702715,
+      0.44580124490814055
+    ],
+    "velocity_magnitude": [
+      0.001115670589679633,
+      1.531035944443961
+    ],
+    "magnetic_pressure": [
+      2.7147800313662634e-05,
+      0.23105901560048736
+    ],
+    "current_magnitude": [
+      0.0002888279038337771,
+      25.975075555624468
+    ]
+  },
+  "final_kinetic_energy": 0.043014976066868535,
+  "final_magnetic_energy": 0.0527245077563427,
+  "integral_changes": [
+    8.326672684688674e-17,
+    0.0,
+    -4.0318768289304696e-18,
+    0.0,
+    -5.049497499021172e-07,
+    2.0816681711721685e-17,
+    -2.659683454378503e-18,
+    0.0,
+    -3.3881317890172014e-20
+  ],
+  "divergence": {
+    "final_L2": 0.07097980175665283,
+    "maximum_L2": 0.0935114688760699,
+    "dimensionless_dx_L2_over_B_rms": 0.0017076684223858805
+  },
+  "coarse_vs_restricted_fine_L1": {
+    "density": 0.013392943781668745,
+    "pressure": 0.017153219890976755,
+    "field_x": 0.028330759377038578,
+    "field_y": 0.032870208090101265
+  }
+}

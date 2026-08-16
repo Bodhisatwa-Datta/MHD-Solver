@@ -4,7 +4,7 @@ A progressively developed finite-volume solver for compressible hydrodynamics an
 magnetohydrodynamics. This is a readable, reproducible computational-physics
 codebase rather than a production simulation package.
 
-## Current status: Phase 3, 2D GLM-MHD foundation
+## Current status: Phase 3, validated Orszag–Tang vortex
 
 The implemented model is the one-dimensional compressible Euler system
 
@@ -37,8 +37,8 @@ this restricted geometry.
 The first two-dimensional increment adds an unsplit Cartesian finite-volume
 solver, x/y HLL fluxes, multidimensional CFL control, two-dimensional boundary
 fills, and damped generalized-Lagrange-multiplier (GLM) divergence cleaning. A
-controlled divergence perturbation has been validated; Orszag–Tang and magnetic
-rotor runs remain pending.
+controlled divergence perturbation and the nonlinear Orszag–Tang vortex have
+been validated; the magnetic rotor remains pending.
 
 ## Installation
 
@@ -103,6 +103,16 @@ This compares damped and undamped evolution of a controlled sinusoidal
 `figures/divergence_cleaning.png` and
 `benchmarks/convergence/divergence_cleaning.json`.
 
+Run the Orszag–Tang vortex and its 64/128-cell resolution comparison with:
+
+```bash
+python scripts/run_orszag_tang.py
+```
+
+The generated figure contains density, gas and magnetic pressure, current
+density, velocity, and magnetic-divergence fields. Parameters and diagnostics
+are saved beside it in `figures/orszag_tang.json`.
+
 ## Tests
 
 ```bash
@@ -150,6 +160,6 @@ and [the validation record](docs/validation.md) for scientific details.
 
 1. Hydrodynamics baseline (validated)
 2. 1D ideal MHD: HLL, Brio-Wu, and Alfvén convergence (validated)
-3. 2D ideal MHD: GLM foundation validated; Orszag–Tang and rotor pending
+3. 2D ideal MHD: GLM and Orszag–Tang validated; magnetic rotor pending
 4. Explicit resistive MHD validated against magnetic diffusion
 5. Harris-sheet reconnection experiments

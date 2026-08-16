@@ -170,3 +170,60 @@ validate nonlinear multidimensional MHD dynamics. Orszag–Tang is the next
 required benchmark. Data and the diagnostic figure are stored in
 `benchmarks/convergence/divergence_cleaning.json` and
 `figures/divergence_cleaning.png`.
+
+## Orszag–Tang vortex
+
+The periodic unit-square initial condition uses \(\gamma=5/3\),
+
+\[
+\rho=\frac{25}{36\pi},\qquad p=\frac{5}{12\pi},
+\]
+
+\[
+\mathbf v=(-\sin 2\pi y,\ \sin 2\pi x,\ 0),
+\]
+
+\[
+\mathbf B=\frac{1}{\sqrt{4\pi}}
+(-\sin 2\pi y,\ \sin 4\pi x,\ 0).
+\]
+
+This is the standard compressible setup used by established MHD codes such as
+the [Athena test suite](https://www.astro.princeton.edu/~jstone/Athena/tests/orszag-tang/pagesource.html).
+The discrete initial magnetic divergence is zero to roundoff. Runs used HLL,
+MUSCL-minmod, SSP-RK2, CFL 0.3, \(c_h=2\), \(\kappa=2\), and periodic boundaries.
+
+At \(t=0.5\), the 128×128 calculation produced interacting shocks and thin
+current sheets while remaining physical:
+
+| Diagnostic | Measured value |
+|---|---:|
+| Density range | 0.10436–0.41824 |
+| Gas-pressure range | 0.03999–0.44580 |
+| Maximum velocity magnitude | 1.53104 |
+| Maximum magnetic pressure | 0.23106 |
+| Maximum \(|J_z|\) | 25.9751 |
+| Final kinetic energy | 0.0430150 |
+| Final magnetic energy | 0.0527245 |
+| Final \(\|\nabla\cdot\mathbf B\|_2\) | 0.0709798 |
+| \(\Delta x\|\nabla\cdot B\|_2/B_{rms}\) | 1.70767e-3 |
+
+Mass and both momentum components changed by no more than \(8.33\times10^{-17}\).
+Augmented total energy decreased by \(5.05\times10^{-7}\) through the documented
+GLM damping sink.
+
+The 64×64 solution was compared with the volume-restricted 128×128 result:
+
+| Quantity | Coarse/fine \(L_1\) difference |
+|---|---:|
+| Density | 1.33929e-2 |
+| Pressure | 1.71532e-2 |
+| \(B_x\) | 2.83308e-2 |
+| \(B_y\) | 3.28702e-2 |
+
+The shock topology and large-scale structures are consistent between the two
+resolutions, but these differences show that discontinuities and current sheets
+are not grid-converged. The result is therefore a qualitative nonlinear
+validation and resolution-sensitivity study, not a converged reference
+solution. Full diagnostics and the six-panel figure are stored in
+`figures/orszag_tang.json` and `figures/orszag_tang.png`.

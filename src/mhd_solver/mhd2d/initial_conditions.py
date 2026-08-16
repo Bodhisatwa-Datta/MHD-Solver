@@ -25,3 +25,28 @@ def divergence_perturbation(
             zeros,
         )
     )
+
+
+def orszag_tang_vortex(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    """Return the standard periodic Orszag-Tang vortex in ``mu_0 = 1`` units.
+
+    The normalization uses ``rho=25/(36*pi)``, ``p=5/(12*pi)``, and magnetic
+    amplitudes divided by ``sqrt(4*pi)``, with ``gamma=5/3``.
+    """
+    xx, yy = np.meshgrid(x, y)
+    shape = xx.shape
+    zeros = np.zeros(shape)
+    magnetic_scale = 1.0 / np.sqrt(4.0 * np.pi)
+    return np.stack(
+        (
+            np.full(shape, 25.0 / (36.0 * np.pi)),
+            -np.sin(2.0 * np.pi * yy),
+            np.sin(2.0 * np.pi * xx),
+            zeros,
+            np.full(shape, 5.0 / (12.0 * np.pi)),
+            -magnetic_scale * np.sin(2.0 * np.pi * yy),
+            magnetic_scale * np.sin(4.0 * np.pi * xx),
+            zeros,
+            zeros,
+        )
+    )
