@@ -8,6 +8,7 @@
     "gamma": 1.4,
     "cfl": 0.8,
     "order": 2,
+    "boundary": "outflow",
     "max_steps": 1000000
   },
   "boundary_conditions": "transmissive/outflow",

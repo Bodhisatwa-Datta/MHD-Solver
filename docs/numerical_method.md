@@ -10,8 +10,10 @@ cell-averaged conserved states. The semi-discrete update is
 \widehat{\mathbf{F}}_{i+1/2}-\widehat{\mathbf{F}}_{i-1/2}}{\Delta x}.
 \]
 
-Two ghost cells on each side are filled by constant extrapolation, giving
-transmissive/outflow boundaries.
+Two ghost cells are used on each side. They are filled by constant extrapolation
+for transmissive/outflow boundaries or wrapped from the opposite edge for
+periodic boundaries. The latter makes the finite-volume flux telescope exactly,
+up to floating-point roundoff.
 
 ## HLL flux
 
@@ -59,4 +61,3 @@ Each timestep obeys
 
 and the last step is shortened to reach the requested final time exactly. The
 default CFL number is 0.8.
-

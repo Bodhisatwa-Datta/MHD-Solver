@@ -12,6 +12,7 @@ from mhd_solver.common.reconstruction import muscl_interface_states
 from mhd_solver.common.riemann import hll_flux
 
 Order = Literal[1, 2]
+Boundary = Literal["outflow", "periodic"]
 
 
 @dataclass(frozen=True)
@@ -25,6 +26,7 @@ class HydroConfig:
     gamma: float = 1.4
     cfl: float = 0.8
     order: Order = 2
+    boundary: Boundary = "outflow"
     max_steps: int = 1_000_000
 
     def __post_init__(self) -> None:
@@ -32,6 +34,8 @@ class HydroConfig:
             raise ValueError("invalid grid extent, cell count, or final time")
         if self.gamma <= 1.0 or not 0.0 < self.cfl <= 1.0 or self.order not in (1, 2):
             raise ValueError("require gamma > 1, 0 < CFL <= 1, and order 1 or 2")
+        if self.boundary not in ("outflow", "periodic"):
+            raise ValueError("boundary must be 'outflow' or 'periodic'")
 
 
 @dataclass(frozen=True)
@@ -55,15 +59,23 @@ def apply_outflow_boundaries(conserved: np.ndarray, ghost_cells: int = 2) -> np.
     return np.pad(conserved, ((0, 0), (ghost_cells, ghost_cells)), mode="edge")
 
 
+def apply_periodic_boundaries(conserved: np.ndarray, ghost_cells: int = 2) -> np.ndarray:
+    """Pad cell averages by wrapping values from the opposite domain edge."""
+    return np.pad(conserved, ((0, 0), (ghost_cells, ghost_cells)), mode="wrap")
+
+
 def conserved_integrals(conserved: np.ndarray, dx: float) -> np.ndarray:
     """Integrate mass, momentum, and total energy over physical cells."""
     return np.sum(conserved, axis=1) * dx
 
 
 def _spatial_operator(
-    conserved: np.ndarray, dx: float, gamma: float, order: Order
+    conserved: np.ndarray, dx: float, gamma: float, order: Order, boundary: Boundary
 ) -> np.ndarray:
-    extended = apply_outflow_boundaries(conserved)
+    if boundary == "periodic":
+        extended = apply_periodic_boundaries(conserved)
+    else:
+        extended = apply_outflow_boundaries(conserved)
     primitive = conserved_to_primitive(extended, gamma)
     if order == 1:
         left, right = primitive[:, 1:-2], primitive[:, 2:-1]
@@ -101,7 +113,9 @@ def solve(config: HydroConfig, initial_condition: Callable[[np.ndarray], np.ndar
                 final_integrals=conserved_integrals(conserved, dx),
             )
         dt = min(_stable_timestep(conserved, dx, config), config.final_time - time)
-        first_stage = conserved + dt * _spatial_operator(conserved, dx, config.gamma, config.order)
+        first_stage = conserved + dt * _spatial_operator(
+            conserved, dx, config.gamma, config.order, config.boundary
+        )
         conserved_to_primitive(first_stage, config.gamma)
         if config.order == 1:
             conserved = first_stage
@@ -109,7 +123,10 @@ def solve(config: HydroConfig, initial_condition: Callable[[np.ndarray], np.ndar
             conserved = 0.5 * (
                 conserved
                 + first_stage
-                + dt * _spatial_operator(first_stage, dx, config.gamma, config.order)
+                + dt
+                * _spatial_operator(
+                    first_stage, dx, config.gamma, config.order, config.boundary
+                )
             )
             conserved_to_primitive(conserved, config.gamma)
         time += dt

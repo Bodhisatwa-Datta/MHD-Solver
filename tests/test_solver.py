@@ -5,8 +5,13 @@ import numpy as np
 
 from mhd_solver.common.eos import primitive_to_conserved
 from mhd_solver.hydro1d.exact_sod import exact_sod
-from mhd_solver.hydro1d.initial_conditions import sod_shock_tube
-from mhd_solver.hydro1d.solver import HydroConfig, apply_outflow_boundaries, solve
+from mhd_solver.hydro1d.initial_conditions import smooth_density_wave, sod_shock_tube
+from mhd_solver.hydro1d.solver import (
+    HydroConfig,
+    apply_outflow_boundaries,
+    apply_periodic_boundaries,
+    solve,
+)
 
 
 class SolverTests(unittest.TestCase):
@@ -20,6 +25,12 @@ class SolverTests(unittest.TestCase):
         extended = apply_outflow_boundaries(conserved)
         np.testing.assert_array_equal(extended[:, :2], np.repeat(conserved[:, :1], 2, axis=1))
         np.testing.assert_array_equal(extended[:, -2:], np.repeat(conserved[:, -1:], 2, axis=1))
+
+    def test_periodic_boundaries_wrap_opposite_edges(self) -> None:
+        conserved = np.arange(15.0).reshape(3, 5)
+        extended = apply_periodic_boundaries(conserved)
+        np.testing.assert_array_equal(extended[:, :2], conserved[:, -2:])
+        np.testing.assert_array_equal(extended[:, -2:], conserved[:, :2])
 
     def test_uniform_state_is_preserved_for_both_orders(self) -> None:
         primitive = np.array([1.2, 0.3, 0.8])
@@ -49,3 +60,17 @@ class SolverTests(unittest.TestCase):
 
         result = solve(HydroConfig(cells=40, final_time=0.1, order=2), stationary)
         np.testing.assert_allclose(result.final_integrals, result.initial_integrals, atol=1.0e-13)
+
+    def test_periodic_density_wave_converges_under_refinement(self) -> None:
+        errors = []
+        for cells in (40, 80):
+            config = HydroConfig(
+                cells=cells, final_time=0.25, cfl=0.6, order=2, boundary="periodic"
+            )
+            result = solve(config, smooth_density_wave)
+            exact = smooth_density_wave(result.x, time=result.time)
+            errors.append(np.mean(np.abs(result.primitive[0] - exact[0])))
+            np.testing.assert_allclose(
+                result.final_integrals, result.initial_integrals, atol=2.0e-13
+            )
+        self.assertGreater(errors[0] / errors[1], 3.0)

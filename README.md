@@ -50,6 +50,18 @@ This runs 400-cell first- and second-order calculations to `t = 0.2`, prints
 conservation and error diagnostics, and writes `figures/sod_comparison.png`.
 Run `python scripts/run_sod.py --help` for configurable parameters.
 
+Run the smooth periodic-wave convergence study with:
+
+```bash
+python scripts/run_density_wave_convergence.py
+```
+
+It advects an exact sinusoidal entropy wave for one domain crossing at 50, 100,
+200, and 400 cells. The measured first-order rates approach one and the
+MUSCL–RK2 rates approach two. Results are written to
+`benchmarks/convergence/density_wave_convergence.json` and
+`figures/density_wave_convergence.png`.
+
 ## Tests
 
 ```bash
@@ -63,7 +75,8 @@ python -m unittest discover -s tests
 ```
 
 The tests cover equation-of-state conversions, fluxes, reconstruction, outflow
-boundaries, uniform-state preservation, Sod evolution, and conservation.
+and periodic boundaries, uniform-state preservation, Sod evolution, smooth-wave
+convergence, and conservation.
 
 ## Repository layout
 
@@ -81,7 +94,8 @@ benchmarks/                future convergence and performance studies
 
 Settings use an immutable `HydroConfig` object and are exposed by the benchmark
 script. The uniform-grid solver has no AMR, source terms, non-ideal equation of
-state, or multidimensional support. HLL is robust but smears contact
+state, or multidimensional support. Both outflow and periodic boundaries are
+available. HLL is robust but smears contact
 discontinuities. MUSCL is formally second order only in smooth regions.
 
 See [the equations](docs/equations.md), [the numerical method](docs/numerical_method.md),

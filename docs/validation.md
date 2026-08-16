@@ -39,9 +39,33 @@ failure of conservation in the open, pressure-loaded domain.
 The generated figure and machine-readable run record are
 `figures/sod_comparison.png` and `figures/sod_comparison.json`.
 
+## Smooth periodic density wave
+
+A sinusoidal density profile with amplitude 0.2, uniform velocity 1, and uniform
+pressure 1 is advected across the unit periodic domain. At \(t=1\) it has
+completed one crossing and must equal its initial state exactly. Calculations
+used \(\gamma=1.4\), CFL 0.6, HLL fluxes, and resolutions 50, 100, 200, and 400.
+
+| Cells | First-order \(L_1\) | Order | MUSCL + RK2 \(L_1\) | Order |
+|---:|---:|---:|---:|---:|
+| 50  | 3.91613e-2 | —    | 7.46898e-3 | —    |
+| 100 | 2.14014e-2 | 0.872 | 2.12666e-3 | 1.812 |
+| 200 | 1.11960e-2 | 0.935 | 5.90722e-4 | 1.848 |
+| 400 | 5.72710e-3 | 0.967 | 1.60072e-4 | 1.884 |
+
+The first-order method approaches its expected order of one. MUSCL with minmod
+and SSP-RK2 approaches second order; the remaining reduction is consistent with
+the limiter becoming first order at smooth extrema. Across every run, absolute
+changes in integrated mass, momentum, and energy were at most
+\(4.44\times10^{-16}\), demonstrating conservative periodic evolution to
+roundoff. The figure and full machine-readable record are
+`figures/density_wave_convergence.png` and
+`benchmarks/convergence/density_wave_convergence.json`.
+
 ## Scope of validation
 
-The Sod test exercises a rarefaction, contact discontinuity, and shock. Agreement
-with it is necessary but not sufficient to validate a general Euler solver.
-Future hydrodynamic work should include smooth-wave convergence and stronger
-shock tests before extending the numerical framework to MHD.
+Together, the Sod problem and smooth-wave study exercise shocks, a rarefaction,
+contact transport, formal convergence, and periodic conservation. A stronger
+shock test would further broaden the hydrodynamic validation envelope, but the
+present baseline now covers the principal requirements needed before the 1D MHD
+extension.

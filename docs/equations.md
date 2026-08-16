@@ -30,3 +30,16 @@ and the adiabatic sound speed is \(c=\sqrt{\gamma p/\rho}\). The code uses
 There are no source terms, viscosity, thermal conduction, magnetic fields, or
 multi-dimensional terms in Phase 1.
 
+## Exact smooth advection solution
+
+For constant velocity \(v_0\) and pressure \(p_0\), an arbitrary density profile
+is an entropy/contact mode of the Euler system and is advected without changing
+shape. The convergence benchmark uses
+
+\[
+\rho(x,t)=1+0.2\sin\left[2\pi(x-v_0t)\right],\qquad
+v_0=1,\qquad p_0=1
+\]
+
+on a unit periodic domain. This is an exact nonlinear Euler solution, so its
+error is not contaminated by a linearisation or separately computed reference.
