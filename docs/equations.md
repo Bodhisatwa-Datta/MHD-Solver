@@ -175,7 +175,7 @@ Force balance requires constant total pressure. With background gas pressure
 $p_b$, the implemented profile is
 
 $$
-p(y)=p_b+\frac{B_0^2}{2}\operatorname{sech}^2(y/L),\qquad
+p(y)=p_b+\frac{B_0^2}{2\cosh^2(y/L)},\qquad
 p(y)+\frac{B_x(y)^2}{2}=p_b+\frac{B_0^2}{2}.
 $$
 

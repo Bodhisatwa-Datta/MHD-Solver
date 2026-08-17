@@ -41,8 +41,8 @@ with forward Euler. The second-order method reconstructs density, velocity, and
 pressure using component-wise minmod slopes,
 
 $$
-\operatorname{minmod}(a,b)=
-\begin{cases}\operatorname{sign}(a)\min(|a|,|b|),&ab>0,\\0,&ab\leq0.
+\mathrm{minmod}(a,b)=
+\begin{cases}\mathrm{sgn}(a)\min(|a|,|b|),&ab>0,\\0,&ab\leq0.
 \end{cases}
 $$
 
